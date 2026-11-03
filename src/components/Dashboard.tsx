@@ -1,0 +1,30 @@
+import { ArrowDownToLine, ArrowRight, ArrowUpRight, Boxes, CheckCheck, ChevronRight, FolderKanban, GitBranch, Plus, Users } from 'lucide-react';
+import { roles, progress, type Project } from '../domain';
+import { Avatar, Empty, Pipeline, ProgressBar, RunButton, Status } from './ui';
+
+interface Props { projects: Project[]; onNew: () => void; onSelect: (project: Project) => void; onRun: (id: string, action: 'start' | 'pause') => void; onRole: (role: typeof roles[number]) => void; onAgents: () => void; onProjects: () => void }
+export function Dashboard(props: Props) {
+  const { projects, onNew, onSelect, onRun, onRole, onAgents, onProjects } = props;
+  const focus = projects.find(p => p.state === 'running' || p.state === 'paused') || projects[0];
+  const stats = [
+    { label: 'Projets dans l’atelier', value: projects.length, icon: FolderKanban, detail: `${projects.filter(p => p.state === 'draft').length} à démarrer` },
+    { label: 'Rôles spécialisés', value: '06', icon: Users, detail: 'Un cycle de production complet' },
+    { label: 'Étapes terminées', value: projects.reduce((sum, p) => sum + p.tasks.filter(t => t.state === 'done').length, 0), icon: CheckCheck, detail: 'Dans vos simulations' },
+    { label: 'Livrables préparés', value: projects.reduce((sum, p) => sum + p.artifacts.length, 0), icon: Boxes, detail: 'Documents de simulation' },
+  ];
+  return <>
+    <div className="page-heading"><div><p className="eyebrow">VOTRE ESPACE DE PRODUCTION</p><h1>De l’idée au logiciel<span className="text-accent">.</span></h1><p className="page-subtitle">Cadrez, construisez, vérifiez. Toute votre équipe au même endroit.</p></div><button className="btn primary" onClick={onNew}><Plus size={17} />Nouveau projet</button></div>
+    <div className="stats-grid">{stats.map(({ label, value, icon: Icon, detail }) => <div className="stat" key={label}><div className="stat-top"><span>{label}</span><Icon size={17} /></div><strong>{typeof value === 'number' ? String(value).padStart(2, '0') : value}</strong><small>{detail}</small></div>)}</div>
+    <div className="dashboard-grid"><section className="panel production-panel"><div className="section-heading"><h2><span className="section-dot" />En cours à l’atelier</h2><span className="mono-caption">PIPELINE / 01</span></div>
+      {focus ? <><div className="focus-project"><div className="project-top"><span className="project-symbol"><GitBranch size={24} /></span><Status project={focus} /></div><button className="project-name-link" onClick={() => onSelect(focus)}>{focus.name}<ArrowUpRight size={21} /></button><p className="project-description">{focus.brief}</p><div className="project-meta"><span>{focus.type}</span><span>{focus.example ? 'Projet d’exemple' : 'Votre projet'}</span><span>Simulation locale</span></div><div className="progress-heading"><span>Progression du cycle</span><strong>{progress(focus)} % <span>· {focus.artifacts.length}/6 étapes</span></strong></div><ProgressBar project={focus} /></div>
+      <Pipeline project={focus} onRole={onRole} />
+      <div className="panel-footer"><span className="footer-hint"><span className="dot-outline" />{focus.state === 'running' ? 'Simulation déterministe en cours' : 'Vous contrôlez chaque lancement'}</span><RunButton project={focus} onChange={action => onRun(focus.id, action)} /></div></> : <Empty title="Votre atelier est prêt" description="Créez un premier projet pour explorer les six étapes de production."><button className="btn primary" onClick={onNew}><Plus size={16} />Créer un projet</button></Empty>}
+    </section>
+    <section className="panel team-panel"><div className="section-heading"><h2>Six expertises. Une équipe.</h2><Users size={17} className="text-muted" /></div><p className="panel-intro">Chaque rôle a une mission et un livrable précis.</p><div className="team-list">{roles.map((role, i) => <button key={role.id} onClick={() => onRole(role)} className="team-row"><Avatar role={role} small /><span><strong>{role.title}</strong><small>{role.label}</small></span><span className="role-number">0{i + 1}</span><ChevronRight size={15} /></button>)}</div><button className="text-link team-link" onClick={onAgents}>Explorer les consignes des agents<ArrowRight size={15} /></button></section></div>
+    <div className="dashboard-bottom"><section className="panel"><div className="section-heading"><h2>Les projets de l’atelier</h2><button className="text-link" onClick={onProjects}>Tout voir<ArrowUpRight size={15} /></button></div><ProjectTable projects={projects.slice(0, 3)} onSelect={onSelect} /></section><section className="work-note"><span className="note-index">LA MÉTHODE FACTORY / 001</span><div className="note-art" aria-hidden="true"><span /><span /><span /><ArrowDownToLine size={27} /></div><h2>Une idée claire.<br />Des résultats traçables.</h2><p>Le brief guide chaque étape. Les livrables racontent ce qui a été préparé, et ce qui reste à vérifier.</p></section></div>
+  </>;
+}
+
+export function ProjectTable({ projects, onSelect }: { projects: Project[]; onSelect: (project: Project) => void }) {
+  return projects.length ? <div className="table-scroll"><table className="project-table"><thead><tr><th>Projet</th><th>État</th><th>Progression</th><th><span className="sr-only">Ouvrir</span></th></tr></thead><tbody>{projects.map((project, i) => <tr key={project.id}><td><button className="table-project" onClick={() => onSelect(project)}><span className={`mini-project color-${i % 3}`}><FolderKanban size={17} /></span><span><strong>{project.name}</strong><small>{project.example ? 'Exemple · ' : ''}{project.type}</small></span></button></td><td><Status project={project} /></td><td><div className="table-progress"><ProgressBar project={project} /><span>{progress(project)} %</span></div></td><td><button className="icon-button" aria-label={`Ouvrir ${project.name}`} onClick={() => onSelect(project)}><ArrowUpRight size={17} /></button></td></tr>)}</tbody></table></div> : <Empty title="Aucun projet trouvé" description="Essayez un autre nom ou créez un projet." />;
+}

@@ -1,0 +1,5 @@
+# Les rôles sont découverts dans .codex/agents/*.toml par les versions compatibles.
+# Le plafond du runtime parent reste prioritaire.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
