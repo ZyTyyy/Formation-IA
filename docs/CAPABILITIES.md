@@ -1,5 +1,13 @@
 # Capacités et limites
 
+## État après l'étape 3 — 4 novembre 2026
+
+Le moteur serveur sait persister et suivre un pipeline avec un adaptateur de test injecté. Les contrats v1 sont validés dans le serveur et les consignes des six TOML sont explicitement chargées et épinglées. Le stockage, les tentatives, les plafonds, la pause/reprise et la récupération sont décrits dans [ORCHESTRATION.md](ORCHESTRATION.md), avec preuves dans [QA-ORCHESTRATOR.md](QA-ORCHESTRATOR.md).
+
+Le serveur livré n'injecte aucun adaptateur : son diagnostic v1 annonce `available:false` et `liveGeneration:false`. Les exécutions de tests sont `mode:example`, leurs fichiers sont virtuels et leurs contrôles n'exécutent aucun code généré. Le pont CLI historique reste facultatif, distinct et en lecture seule. L'interface n'est pas encore raccordée au nouveau moteur.
+
+Les sections ci-dessous conservent le bilan initial de construction et ses limites datées ; les nombres de tests historiques ne remplacent pas le rapport de cette étape. L'adaptateur réel, l'isolation système et la génération d'applications restent à réaliser.
+
 Ce document distingue l'environnement de construction, les fonctions du MVP et les intégrations à activer. La présence d'un outil ne prouve ni son authentification ni la réussite d'une tâche.
 
 ## Capacités observées pendant l'inspection

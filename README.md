@@ -33,6 +33,14 @@ Le pont utilise les options disponibles dans le CLI inspecté `0.166.0-alpha.5.1
 
 Une seule mission réelle est admise, durée maximale 120 secondes, sortie limitée, arguments fixes et prompt transmis via stdin. Si l’arrêt après timeout n’est pas confirmé, le job échoue et le pont reste bloqué explicitement ; vérifier le processus avant de redémarrer le serveur. Les jobs et leurs résultats restent en mémoire (50 maximum), jusqu’au redémarrage du serveur ; le frontend les conserve pendant la session ouverte. Exportez les résultats utiles.
 
+## Orchestrateur persistant — étape 3
+
+Le backend possède désormais une API `/api/v1/` pour les runs, les six missions, les tentatives et les événements persistants. Le stockage local est dans `.local/orchestrator/` (ignoré par Git). Les règles et routes sont décrites dans [docs/ORCHESTRATION.md](docs/ORCHESTRATION.md).
+
+Le serveur livré ne reçoit **aucun adaptateur d'exécution** : il conserve des brouillons mais refuse leur lancement. Les tests injectent un adaptateur `example` avec fichiers virtuels et preuves factices ; ils ne génèrent pas d'application réelle. Le pont CLI ci-dessus conserve sa fonction indépendante d'analyse en lecture seule. Le parcours de l'interface reste une simulation ; le raccordement au nouveau moteur viendra à l'étape 6.
+
+Pour vérifier le moteur seul : `npm run test:orchestrator`. Pour le diagnostic local : `GET /api/v1/orchestration`. Les rapports propres à ce lot sont [QA-ORCHESTRATOR.md](docs/QA-ORCHESTRATOR.md) et [REVIEW-ORCHESTRATOR.md](docs/REVIEW-ORCHESTRATOR.md).
+
 ## Vérifier et compiler
 
 ```powershell

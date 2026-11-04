@@ -5,13 +5,13 @@ Construire une usine locale qui transforme un brief en application web exécutab
 
 `docs/PRODUCT.md` définit la cible et les critères d'acceptation ; `docs/ROADMAP.md` définit les étapes et leurs preuves. `docs/AGENT-CONTRACTS.md` et `contracts/*.schema.json` définissent les missions, résultats et conditions de transmission des six rôles. `docs/UX.md`, `docs/ARCHITECTURE.md` et `docs/CAPABILITIES.md` décrivent l'existant tant qu'une étape ne les a pas explicitement actualisés. Les rapports QA, de revue et d'exécution sont des preuves datées, limitées à leur périmètre.
 
-L'existant produit des simulations et propose un pont CLI d'analyse en lecture seule. La génération réelle reste à implémenter. Ne jamais présenter une capacité prévue comme disponible, une animation comme une exécution ou un rôle comme un agent autonome actif sans preuve.
+L'existant produit des simulations, propose un pont CLI d'analyse en lecture seule et possède un orchestrateur persistant testé avec adaptateur injecté `example` (voir `docs/ORCHESTRATION.md`). Aucun adaptateur n'est activé dans le serveur livré ; la génération réelle reste à implémenter. Ne jamais présenter une capacité prévue comme disponible, une animation comme une exécution ou un rôle comme un agent autonome actif sans preuve.
 
 ## Deux périmètres distincts
 - **Développer l'usine** : modifier ce dépôt et ses documents selon la tâche autorisée.
 - **Produire une application** : travailler dans un espace propre au projet généré, avec ses sources, documents, tests et preuves. Ce parcours n'est pas encore implémenté.
 
-Les chemins de livrables ci-dessous sont relatifs au périmètre explicitement confié. Une mission de génération ne doit pas écraser les documents ou le code de l'usine. Les fichiers de rôles sont alignés sur le contrat v1 ; leur chargement par un futur adaptateur et leur validation serveur restent à implémenter. Leur présence ne prouve pas une délégation.
+Les chemins de livrables ci-dessous sont relatifs au périmètre explicitement confié. Une mission de génération ne doit pas écraser les documents ou le code de l'usine. Les fichiers de rôles sont alignés sur le contrat v1, explicitement chargés et validés par le moteur de test ; leur transmission à un runtime réel reste à implémenter. Leur présence ne prouve pas une délégation.
 
 ## Travail d'équipe
 - Product Manager : `docs/PRODUCT.md`, critères d'acceptation et périmètre.
@@ -64,6 +64,6 @@ Associer toute preuve à son périmètre, sa version, sa commande ou procédure,
 ## Système et autorisations
 Le navigateur ne reçoit pas les outils internes du chat Codex. Le pont CLI actuel reste local, désactivé par défaut et en lecture seule ; ne pas assouplir ses protections pour simuler l'arrivée du moteur de génération. Le futur mode d'écriture exige une isolation et une politique d'outils explicites.
 
-Une session authentifiée et un quota sont nécessaires pour les vrais jobs ; signaler la consommation possible avant activation. Cette étape documentaire n'autorise aucun appel modèle réel ni publication. Les actions locales réversibles nécessaires à une tâche déjà autorisée ne demandent pas une confirmation supplémentaire.
+Une session authentifiée et un quota sont nécessaires pour les vrais jobs ; signaler la consommation possible avant activation. L'étape 3 d'orchestration n'autorise aucun appel modèle réel ni publication. Les actions locales réversibles nécessaires à une tâche déjà autorisée ne demandent pas une confirmation supplémentaire.
 
 Garder les limites de sécurité et les politiques du parent. Ne jamais contourner les approbations. MCP et skills hérités restent soumis aux capacités du runtime. Aucun serveur MCP externe activé automatiquement. Publications, transmissions externes et opérations irréversibles restent soumises aux autorisations effectives.

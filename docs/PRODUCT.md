@@ -14,6 +14,7 @@ Première cible : **une application web React, TypeScript et Tailwind, exécuté
 | Six rôles, progression et documents | Simulation déterministe, explicitement étiquetée |
 | Sauvegarde des projets simulés | Stockage navigateur ; simulation mise en pause au rechargement |
 | Mission CLI réelle | Pont facultatif d'analyse en lecture seule, une mission à la fois, historique serveur en mémoire |
+| Orchestrateur persistant (évolution étape 3) | Implémenté avec adaptateur de test injecté, fichiers virtuels et API v1 ; aucun adaptateur activé dans le serveur livré |
 | Génération de sources, orchestration réelle, tests de l'application produite | À implémenter |
 | Isolation par application, aperçu isolé et export des sources générées | À implémenter |
 
@@ -57,7 +58,7 @@ Les chemins ci-dessous sont relatifs à l'application produite et ne désignent 
 | Revue | Même version, diff et résultats QA | `docs/REVIEW.md`, constats priorisés | Défauts bloquants renvoyés en correction |
 | Correction et livraison | Constats et échecs | Version corrigée, preuves, aperçu et export | Aucun défaut bloquant ouvert ; contrôles et revue à jour |
 
-Les contrats détaillés sont définis dans [AGENT-CONTRACTS.md](AGENT-CONTRACTS.md) et les schémas du dossier `contracts/` ; leur application par le moteur reste à implémenter. Le coordinateur gère les transitions ; aucun rôle ne s'attribue toutes les validations. Une modification des entrées entraîne la revalidation des étapes dépendantes.
+Les contrats détaillés sont définis dans [AGENT-CONTRACTS.md](AGENT-CONTRACTS.md) et les schémas du dossier `contracts/`. Le moteur de l'étape 3 les valide avec un adaptateur de test ; leur application à une vraie génération reste à implémenter. Le coordinateur gère les transitions ; aucun rôle ne s'attribue toutes les validations. Une modification des entrées entraîne la revalidation des étapes dépendantes.
 
 ## Critères d'acceptation de la cible
 Ces critères doivent être démontrés avant de déclarer la première version réelle livrée. Leur rédaction ne vaut pas réussite.

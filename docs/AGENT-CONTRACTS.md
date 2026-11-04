@@ -1,6 +1,6 @@
 # Contrats des six rôles — version 1
 
-Date : 4 novembre 2026. Références : [AGENTS.md](../AGENTS.md), [PRODUCT.md](PRODUCT.md) et [ROADMAP.md](ROADMAP.md). Ces contrats préparent le moteur des étapes 3 et 4 ; ils ne sont pas encore appliqués par l'API actuelle.
+Date : 4 novembre 2026. Références : [AGENTS.md](../AGENTS.md), [PRODUCT.md](PRODUCT.md) et [ROADMAP.md](ROADMAP.md). Les contrats v1 sont désormais appliqués par le moteur de test de l'étape 3, accessible via l'API `/api/v1/` ; ils ne sont pas chargés par le pont CLI historique. L'application à un runtime réel reste à l'étape 4. Les paragraphes de conception ci-dessous restent la référence pour cette cible ; [ORCHESTRATION.md](ORCHESTRATION.md) distingue ce qui est implémenté sur données virtuelles de ce qui reste à connecter.
 
 ## Portée et transmission des consignes
 
@@ -133,4 +133,4 @@ Les exemples JSON de [agent-contract-examples.json](../contracts/agent-contract-
 
 Contrôle reproductible depuis la racine : `python scripts/check_agent_contracts.py`. Prérequis de développement : Python 3.11 ou plus et le paquet `jsonschema` déjà installé ; aucun paquet n'est téléchargé par ce contrôle et ces outils ne sont pas des dépendances du produit Node. Le contrôle parse les six TOML, vérifie les schémas et exemples, et exerce des rejets de structure (rôle, version, chemins et statuts incohérents). Il ne vérifie ni l'existence de fichiers générés ni l'authenticité des preuves.
 
-L'étape 2 vérifie la syntaxe des six TOML, la cohérence des noms et des instructions, la validité des schémas et exemples, puis une revue indépendante. Aucun chargeur, validateur serveur, outil d'écriture ou pipeline réel n'est livré ici. Les tests sémantiques des cinq invariants et des rejets doivent être implémentés avec un adaptateur injecté à l'étape 3 ; les frontières système et un véritable projet généré relèvent de l'étape 4.
+L'étape 2 a vérifié la syntaxe des six TOML, la cohérence des noms et des instructions, la validité des schémas et exemples, puis une revue indépendante. L'étape 3 ajoute le chargement explicite, les validateurs serveur et les tests sémantiques sur des fichiers virtuels avec un adaptateur injecté. Aucun outil d'écriture système ni pipeline réel n'est livré ; les frontières système et un véritable projet généré relèvent de l'étape 4.

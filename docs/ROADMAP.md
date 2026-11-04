@@ -5,13 +5,13 @@ Référence : `PRODUCT.md`, cadrage du 4 novembre 2026. Ces étapes font évolue
 ## Progression et état
 Chaque étape produit un résultat vérifiable et une revue indépendante. Le coordinateur rapporte fichiers touchés, contrôles, preuves et limites. Il préserve le travail existant et ne clôture pas une étape sur un simple statut d'agent.
 
-Le lot courant couvre l'étape 2, à la demande de l'utilisateur après clôture du cadrage. Les étapes 3 à 6 restent planifiées et ne sont pas implémentées dans ce lot. La simulation et le pont d'analyse en lecture seule sont préservés.
+Le lot courant couvre l'étape 3, à la demande de l'utilisateur après clôture des contrats. Les étapes 4 à 6 restent planifiées et ne sont pas implémentées dans ce lot. La simulation et le pont d'analyse en lecture seule sont préservés.
 
 | Étape | État | Dépendance | Critères produit principalement couverts |
 | --- | --- | --- | --- |
 | 1. Cadrage et règles globales | Terminée — cadrage documentaire revu | Audit de l'existant effectué dans cette conversation | Définit 1 à 15, sans les valider |
 | 2. Contrats des six rôles | Terminée — contrats revus, moteur non implémenté | Étape 1 | 3, 4, 12 |
-| 3. Orchestrateur persistant | À réaliser | Étape 2 | 2, 4, 8, 9, 10 |
+| 3. Orchestrateur persistant | Terminée — vérifiée sur adaptateur injecté | Étape 2 | 2, 4, 8, 9, 10 sur adaptateur injecté |
 | 4. Génération réelle isolée | À réaliser | Étape 3 | 5, 6, 7 |
 | 5. Boucle de qualité | À réaliser | Étape 4 | 10, 11, 12 |
 | 6. Interface, aperçu et recette complète | À réaliser | Étape 5 | 1, 2, 7, 13, 14, 15 et recette de l'ensemble |
@@ -69,4 +69,10 @@ L'étape 2 est clôturée le 4 novembre 2026. Le lot comprend [AGENT-CONTRACTS.m
 
 Contrôles de l'usine exécutés par le coordinateur : `npm run typecheck`, `npm test` (39 frontend + 13 backend = 52 réussis) et `npm run build`, tous avec code 0. Références du lot vérifiées et `git diff --check` réussi. Aucun fichier de `src/`, `server/` ou `.codex/config.toml` n'a été modifié ; aucun job réel n'a été lancé via le pont. Aucun chargement automatique des TOML, validateur serveur ou cycle réel de génération n'est activé.
 
-Les résultats historiques de `QA-UX.md` ne prouvent pas le fonctionnement de la cible. Les 15 critères d'implémentation restent à vérifier par le futur moteur et la recette complète. Prochaine étape après clôture du lot : orchestrateur persistant avec adaptateur injecté, sans appel modèle facturable.
+Les résultats historiques de `QA-UX.md` ne prouvent pas le fonctionnement de la cible. Les 15 critères d'implémentation complets restent à vérifier sur une génération réelle et la recette utilisateur. À la clôture de l'étape 2, le lot suivant était l'orchestrateur persistant avec adaptateur injecté, sans appel modèle facturable.
+
+L'étape 3 ajoute le moteur serveur et son API v1, le journal JSON local validé et verrouillé, les instructions épinglées, les six missions séquentielles, les plafonds, les sorties partielles et instantanés historiques, la pause/reprise et la réconciliation explicite après redémarrage. L'exécution demeure `example` sur adaptateur injecté, avec fichiers virtuels et contrôles factices ; aucune application cliente réelle ni connexion au CLI n'est activée. Voir [ORCHESTRATION.md](ORCHESTRATION.md), [QA-ORCHESTRATOR.md](QA-ORCHESTRATOR.md) et [REVIEW-ORCHESTRATOR.md](REVIEW-ORCHESTRATOR.md).
+
+Clôture de l'étape 3 le 4 novembre 2026 : 29 tests d'orchestrateur réussis, suite complète de 81 tests (39 frontend, 13 pont, 29 moteur), TypeScript et build réussis. Revue indépendante des corrections clôturée sans constat ouvert. Le contrôle des contrats et les liens locaux sont vérifiés. Les preuves concernent l'usine et son pipeline injecté ; aucun critère de génération réelle n'est déclaré satisfait.
+
+**Prochaine étape : 4 — génération réelle isolée.** Définir et vérifier les droits d'écriture système et d'exécution, puis connecter l'adaptateur réel aux contrats sans affaiblir le pont historique. La recette réelle exige son activation autorisée et l'information sur la consommation. Les étapes 4 à 6 restent à réaliser.

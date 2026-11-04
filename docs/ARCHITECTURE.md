@@ -1,5 +1,11 @@
 # Architecture — AI Software Factory
 
+## Évolution livrée à l'étape 3
+
+Un orchestrateur persistant indépendant complète désormais le pont : journal JSON local atomique et verrouillé, chargement explicite des consignes TOML, validation des contrats v1, six missions séquentielles, pause/reprise, annulation, tentatives et réconciliation après redémarrage. Son API est `/api/v1/`. L'instance de production locale n'a pas d'adaptateur ; les tests injectent uniquement un adaptateur `example`. Aucune génération réelle ou interface de commande libre n'est activée.
+
+Le contrat détaillé, les choix de stockage, états, limites et règles de récupération sont dans [ORCHESTRATION.md](ORCHESTRATION.md). Les sections suivantes décrivent l'architecture historique du parcours de simulation et du pont CLI, conservée par cette évolution. Leurs mentions d'orchestration future concernent toujours l'exécution réelle et l'écriture dans des applications isolées.
+
 ## Décision et périmètre
 
 Le MVP sépare trois capacités : construire cette application avec de véritables sous-agents Codex, simuler un pipeline dans le navigateur et déclencher facultativement de vraies tâches Codex par un serveur local. Ces capacités ont des identités et des preuves distinctes. Les six cartes de rôles ne représentent pas six processus toujours actifs.
