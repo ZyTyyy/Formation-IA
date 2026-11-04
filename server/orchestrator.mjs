@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { openJournal } from './orchestration-store.mjs';
 import { buildMission, CHECKS, fail, fileFingerprint, hash, loadInstructions, permits, POLICIES, ROLES, validateEnvelope, validateResult } from './orchestration-contracts.mjs';
+import { safeArtifactPath, validateFiles } from './generation-workspace.mjs';
 
 const stamp = () => new Date().toISOString();
 const clone = (value) => structuredClone(value);
@@ -8,10 +9,11 @@ const latest = (mission) => mission.attempts.at(-1);
 const runnable = (mission, index) => mission.state === 'accepted' || (index === 4 && mission.state === 'needs_changes');
 const DEFAULTS = { timeoutMs: 120000, maxAttempts: 2, maxOutputBytes: 262144, maxTotalAttempts: 12, maxRunMs: 900000 };
 
-/** An injected test adapter only. No CLI, shell, network or real workspace is exposed here. */
-export function createOrchestrator({ directory, adapter = null, checkRunner = null, limits = {}, now = Date.now } = {}) {
+/** The real adapter only generates data; client command execution is unavailable. */
+export function createOrchestrator({ directory, adapter = null, workspace = null, checkRunner = null, limits = {}, now = Date.now } = {}) {
   if (!directory) throw new Error('Répertoire de journal requis côté serveur.');
-  if (adapter && (adapter.mode !== 'example' || typeof adapter.start !== 'function' || typeof adapter.confirmStopped !== 'function')) fail('INVALID_ADAPTER', 'Seul un adaptateur de test explicite avec confirmation d’arrêt est accepté.', 500);
+  if (adapter && (!['example', 'real'].includes(adapter.mode) || typeof adapter.start !== 'function' || typeof adapter.confirmStopped !== 'function')) fail('INVALID_ADAPTER', 'Adaptateur explicite avec confirmation d’arrêt requis.', 500);
+  if (adapter?.mode === 'real' && (!workspace || typeof workspace.materialize !== 'function' || typeof workspace.verify !== 'function' || checkRunner)) fail('INVALID_ADAPTER', 'La génération réelle exige un espace contrôlé et interdit les contrôles factices.', 500);
   const config = { ...DEFAULTS, ...limits };
   if (Object.keys(limits).some((key) => !Object.hasOwn(DEFAULTS, key)) || Object.values(config).some((value) => !Number.isSafeInteger(value) || value < 1) || config.maxAttempts > 2) fail('INVALID_LIMITS', 'Limites serveur invalides.', 500);
   const instructions = loadInstructions();
@@ -99,10 +101,14 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
       return found;
     };
     return Object.freeze({
-      // Test-only virtual content. Stage 4 must supply a real isolated workspace adapter.
+      // Journal first; capture publishes a checked, immutable disk snapshot.
       writeArtifact(path, content) {
-        const { attempt } = current();
+        const { run, attempt } = current();
         if (!permits(attempt.mission.permissions.writePaths, path) || typeof content !== 'string') fail('WRITE_FORBIDDEN', 'Fichier hors de l’allocation.', 403);
+        if (run.mode === 'real') {
+          safeArtifactPath(path);
+          validateFiles({ ...run.files, [path]: { content, revision: hash(content) } });
+        }
         const bytes = Buffer.byteLength(content);
         if (bytes + attempt.outputBytes > attempt.mission.limits.maxOutputBytes) { requestStop(reservation, 'OUTPUT_LIMIT', 'Plafond de sortie atteint.'); fail('OUTPUT_LIMIT', 'Plafond de sortie atteint.'); }
         change((data) => {
@@ -129,6 +135,7 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
           if (!permits(attempt.mission.permissions.writePaths, path) || !Object.hasOwn(run.files, path)) fail('MISSING_ARTIFACT', 'Capture hors allocation ou fichier absent.');
           return { path, revision: run.files[path].revision, content: run.files[path].content };
         });
+        if (run.mode === 'real') workspace.materialize(run.workspaceId, run.files);
         change((data) => {
           const entry = locate(data, reservation).attempt;
           for (const file of captured) {
@@ -141,7 +148,7 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
       runCheck(commandId, criterionIds) {
         const { run, attempt } = current();
         if (!attempt.mission.permissions.commandIds.includes(commandId) || !CHECKS.includes(commandId) || !Array.isArray(criterionIds) || criterionIds.length !== 1 || criterionIds[0] !== commandId) fail('COMMAND_FORBIDDEN', 'Commande ou critères hors allocation.', 403);
-        if (!checkRunner) return { status: 'not_run', evidenceId: null, revision: fileFingerprint(run.files, true) };
+        if (!checkRunner || run.mode === 'real') return { status: 'not_run', evidenceId: null, revision: fileFingerprint(run.files, true) };
         const fingerprint = fileFingerprint(run.files, true);
         const outcome = checkRunner({ commandId, files: clone(run.files) });
         if (!outcome || !['passed', 'failed'].includes(outcome.status) || typeof outcome.log !== 'string' || Buffer.byteLength(outcome.log) > attempt.mission.limits.maxOutputBytes) fail('INVALID_CHECK', 'Résultat du contrôleur injecté invalide.');
@@ -182,6 +189,7 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
           if (exitCode !== 0) fail('ADAPTER_FAILED', 'L’adaptateur n’a pas terminé avec succès.');
           if (!candidate) fail('INVALID_OUTPUT', 'Aucun résultat structuré reçu.');
           validateResult(run, index, attempt, candidate);
+          if (run.mode === 'real') workspace.verify(run.workspaceId, run.files);
         } catch (caught) { error = caught; }
         if (error) {
           attempt.state = 'failed'; attempt.errorCode = error.code || 'INVALID_OUTPUT'; attempt.error = error.message;
@@ -213,12 +221,23 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
       change((data) => {
         const draft = findRun(data, id);
         draft.state = draft.missions.some((mission) => mission.state === 'needs_changes') ? 'needs_changes' : 'completed';
-        event(draft, 'pipeline_finished', 'Pipeline injecté terminé ; aucune application réelle validée.');
+        event(draft, 'pipeline_finished', 'Pipeline terminé ; la livraison applicative reste non vérifiée.');
       });
       return;
     }
     const task = run.missions[index];
     if (task.state !== 'queued') return;
+    if (run.mode === 'real') {
+      try {
+        for (const previous of run.missions.flatMap((entry) => entry.attempts)) {
+          if (previous.acceptedFiles) workspace.verify(run.workspaceId, previous.acceptedFiles);
+        }
+        workspace.materialize(run.workspaceId, run.files);
+      } catch {
+        change((data) => { const draft = findRun(data, id); draft.state = 'blocked'; event(draft, 'workspace_blocked', 'Intégrité du projet non confirmée ; aucun appel modèle lancé.'); });
+        return;
+      }
+    }
     if (!budgetAvailable(run) || task.attempts.length >= run.limits.maxAttempts) {
       change((data) => { const draft = findRun(data, id); draft.state = 'blocked'; event(draft, 'budget_exhausted', 'Plafond de durée ou de tentatives atteint.'); });
       return;
@@ -242,6 +261,11 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
       const activeHandle = adapter.start({
         executionId, mission: clone(mission), instructions: { global: run.instructions.global, contract: run.instructions.contract, role: run.instructions.roles[task.role].text, hash: run.instructions.roles[task.role].hash },
         tools: toolsFor(reservation),
+        inputs: mission.inputs.map(({ path }) => ({ path, ...clone(run.files[path]) })),
+        onProviderResponse: (metadata) => {
+          if (!validReservation(reservation)) return;
+          change((data) => { const { run: draft, attempt } = locate(data, reservation); event(draft, 'provider_response', JSON.stringify(metadata), mission.missionId, attempt.number); });
+        },
         onSession: (sessionId) => {
           if (!validReservation(reservation)) return;
           const { run: currentRun, attempt } = locate(state, reservation);
@@ -278,6 +302,7 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
     if (!adapter) fail('ORCHESTRATOR_UNAVAILABLE', 'Aucun adaptateur injecté. La génération réelle n’est pas disponible.', 503);
     assertSlot();
     const run = findRun(state, id);
+    if (run.mode !== adapter.mode) fail('MODE_MISMATCH', 'Ce projet ne peut pas changer de mode d’exécution.');
     if (!budgetAvailable(run)) fail('BUDGET_EXHAUSTED', 'Plafond global atteint ; aucune relance automatique.');
     if (retry) {
       if (!['blocked', 'interrupted'].includes(run.state)) fail('INVALID_TRANSITION', 'Cette exécution ne peut pas être retentée.');
@@ -294,7 +319,7 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
   }
 
   const api = {
-    health: () => ({ available: !!adapter && !fatal && !closed, mode: adapter ? 'example' : null, persistence: 'local-json', maxConcurrency: 1, liveGeneration: false, monetaryUsageMeasured: false, limits: clone(config), reservation: clone(state.reservation), blocked: fatal || !!state.reservation && locate(state, state.reservation).attempt.state !== 'running' }),
+    health: () => ({ available: !!adapter && !fatal && !closed, mode: adapter?.mode || null, persistence: 'local-json', maxConcurrency: 1, liveGeneration: adapter?.mode === 'real', monetaryUsageMeasured: false, capabilities: clone(adapter?.capabilities || null), limits: clone(config), reservation: clone(state.reservation), blocked: fatal || !!state.reservation && locate(state, state.reservation).attempt.state !== 'running' }),
     list: () => state.runs.map(({ id, projectId, brief, mode, state: status, createdAt, updatedAt }) => ({ id, projectId, brief, mode, state: status, createdAt, updatedAt })),
     find: (id) => ({ ...clone(findRun(state, id)), deliveryVerified: false }),
     create(input) {
@@ -302,13 +327,13 @@ export function createOrchestrator({ directory, adapter = null, checkRunner = nu
       if (state.runs.length >= 100) fail('STORE_FULL', 'Limite de 100 exécutions atteinte ; aucun historique supprimé automatiquement.', 503);
       const id = randomUUID();
       change((data) => {
-        const run = { id, projectId: randomUUID(), workspaceId: randomUUID(), brief: input.brief.trim(), mode: 'example', state: 'draft', createdAt: stamp(), updatedAt: stamp(),
+        const run = { id, projectId: randomUUID(), workspaceId: randomUUID(), brief: input.brief.trim(), mode: adapter?.mode || 'example', state: 'draft', createdAt: stamp(), updatedAt: stamp(),
           budget: { maxTotalAttempts: config.maxTotalAttempts, maxRunMs: config.maxRunMs, usedAttempts: 0, elapsedMs: 0 },
           limits: { timeoutMs: config.timeoutMs, maxAttempts: config.maxAttempts, maxOutputBytes: config.maxOutputBytes },
           instructions: clone(instructions), files: {}, evidence: [], events: [],
           missions: ROLES.map((role) => ({ id: randomUUID(), role, state: 'queued', attempts: [] })),
         };
-        event(run, 'run_created', 'Pipeline de test ; aucune exécution modèle réelle.');
+        event(run, 'run_created', run.mode === 'real' ? 'Génération API : consommation facturable possible, aucun plafond monétaire garanti.' : 'Pipeline de test ; aucune exécution modèle réelle.');
         data.runs.push(run);
       });
       return api.find(id);

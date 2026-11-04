@@ -1,10 +1,12 @@
 # Architecture — AI Software Factory
 
-## Évolution livrée à l'étape 3
+## Évolution des étapes 3 et 4
 
-Un orchestrateur persistant indépendant complète désormais le pont : journal JSON local atomique et verrouillé, chargement explicite des consignes TOML, validation des contrats v1, six missions séquentielles, pause/reprise, annulation, tentatives et réconciliation après redémarrage. Son API est `/api/v1/`. L'instance de production locale n'a pas d'adaptateur ; les tests injectent uniquement un adaptateur `example`. Aucune génération réelle ou interface de commande libre n'est activée.
+Un orchestrateur persistant indépendant complète le pont : journal JSON local atomique et verrouillé, chargement explicite des consignes TOML, validation des contrats v1, six missions séquentielles, pause/reprise, annulation, tentatives et réconciliation après redémarrage. Son API est `/api/v1/`. Sans activation explicite, il n'a pas d'adaptateur. Les tests injectent des contrôleurs et réponses HTTP sans appel modèle.
 
-Le contrat détaillé, les choix de stockage, états, limites et règles de récupération sont dans [ORCHESTRATION.md](ORCHESTRATION.md). Les sections suivantes décrivent l'architecture historique du parcours de simulation et du pont CLI, conservée par cette évolution. Leurs mentions d'orchestration future concernent toujours l'exécution réelle et l'écriture dans des applications isolées.
+L'étape 4 ajoute un transport OpenAI Responses sans outils : données structurées, écritures contrôlées et instantanés versionnés dans `.local/projects/`. Manifeste/verrou proviennent du socle serveur ; chemins, liens, collisions, contenus et versions sont contrôlés avant acceptation. Aucune commande cliente ou configuration générée n'est exécutée. La première génération fournisseur reste non vérifiée faute de configuration API. La QA réelle reste bloquée tant que ses contrôles sont indisponibles.
+
+Les états et routes sont dans [ORCHESTRATION.md](ORCHESTRATION.md) ; transport, politique d'écriture, configuration, plafonds et frontières futures sont dans [GENERATION.md](GENERATION.md). Les sections suivantes conservent l'architecture historique du parcours de simulation et du pont CLI ; les descriptions de capacités futures doivent être lues avec l'état ci-dessus.
 
 ## Décision et périmètre
 

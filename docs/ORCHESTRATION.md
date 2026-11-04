@@ -1,5 +1,7 @@
 # Orchestrateur persistant — étape 3
 
+Évolution étape 4 : les routes et transitions ci-dessous sont conservées. Le serveur peut désormais injecter explicitement un adaptateur `real` OpenAI Responses sans outils et un gestionnaire d'instantanés sur disque. Le mode d'un run est fixé à sa création ; les preuves factices restent interdites en réel. Configuration, plafonds réels et limites d'arrêt distant sont décrits dans [GENERATION.md](GENERATION.md). Les sections suivantes constituent le contrat et les preuves historiques de l'étape 3 sur adaptateur `example`.
+
 Version livrée le 4 novembre 2026. Cette étape implémente le moteur serveur avec un adaptateur de test injecté ; elle ne produit pas d'application réelle et ne connecte pas le navigateur aux outils de ce chat.
 
 ## Frontières et composants

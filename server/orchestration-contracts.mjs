@@ -50,13 +50,13 @@ export function buildMission(run, index, attempt) {
   const policy = POLICIES[index];
   const inputs = Object.entries(run.files).filter(([path]) => permits(policy.read, path)).map(([path, file]) => ({ path, revision: file.revision, producerMissionId: file.producerMissionId }));
   return {
-    contractVersion: 1, mode: 'example', context: 'application', workspaceId: run.workspaceId,
+    contractVersion: 1, mode: run.mode, context: 'application', workspaceId: run.workspaceId,
     projectId: run.projectId, runId: run.id, missionId: run.missions[index].id, attempt,
     role: ROLES[index], purpose: attempt === 1 ? 'initial' : 'correction',
-    objective: `Produire les livrables du rôle ${ROLES[index]} dans le pipeline de test injecté.`, brief: run.brief,
+    objective: `Produire les livrables du rôle ${ROLES[index]} dans le pipeline ${run.mode === 'real' ? 'de génération réelle' : 'de test injecté'}.`, brief: run.brief,
     inputRevision: fileFingerprint(run.files), inputs, dependencies: run.missions.slice(0, index).map((mission) => mission.id),
     permissions: { readPaths: [...policy.read], writePaths: [...policy.write], commandIds: [...(policy.checks || [])] },
-    expectedArtifacts: [...policy.expected],
+    expectedArtifacts: [...policy.expected, ...(run.mode === 'real' && index === 3 ? ['src/main.tsx', 'src/App.tsx', 'src/index.css', 'vite.config.ts', 'tailwind.config.js', 'postcss.config.js'] : [])],
     acceptanceCriteria: (policy.checks || ['deliverable']).map((id) => ({ id, description: id === 'deliverable' ? 'Livrables requis présents et cohérents avec les entrées.' : `Contrôle ${id} requis sur la version courante.` })),
     limits: { ...run.limits },
     mustDifferFromExecutionIds: index === 5 ? run.missions.slice(3, 5).flatMap((mission) => mission.attempts.map((entry) => entry.sessionId).filter(Boolean)) : [],
@@ -87,7 +87,7 @@ export function validateResult(run, index, attempt, result) {
     if (!criteria.has(check.criterionId)) fail('INVALID_EVIDENCE', 'Critère inconnu.');
     if (check.status === 'not_run') continue;
     const evidence = run.evidence.find((entry) => entry.id === check.evidenceId);
-    if (!evidence || evidence.provenance !== 'test-adapter' || evidence.missionId !== mission.missionId || evidence.attempt !== mission.attempt || evidence.criterionId !== check.criterionId || evidence.status !== check.status || evidence.fingerprint !== fileFingerprint(run.files, true)) fail('INVALID_EVIDENCE', 'Preuve absente, périmée ou incompatible avec la mission.');
+    if (run.mode === 'real' || !evidence || evidence.provenance !== 'test-adapter' || evidence.missionId !== mission.missionId || evidence.attempt !== mission.attempt || evidence.criterionId !== check.criterionId || evidence.status !== check.status || evidence.fingerprint !== fileFingerprint(run.files, true)) fail('INVALID_EVIDENCE', 'Preuve absente, périmée ou incompatible avec la mission.');
   }
   if (index === 4 && result.status === 'ready' && [...criteria].some((id) => !result.checks.some((check) => check.criterionId === id && check.status === 'passed'))) fail('VERIFICATION_REQUIRED', 'Les quatre contrôles QA sont requis.');
   if (!attempt.sessionId || (index === 5 && mission.mustDifferFromExecutionIds.includes(attempt.sessionId))) fail('INDEPENDENCE_VIOLATION', 'Session absente ou session auteur réutilisée par le reviewer.');

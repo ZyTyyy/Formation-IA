@@ -1,12 +1,14 @@
 # Capacités et limites
 
-## État après l'étape 3 — 4 novembre 2026
+## État des étapes 3 et 4 — 4 novembre 2026
 
 Le moteur serveur sait persister et suivre un pipeline avec un adaptateur de test injecté. Les contrats v1 sont validés dans le serveur et les consignes des six TOML sont explicitement chargées et épinglées. Le stockage, les tentatives, les plafonds, la pause/reprise et la récupération sont décrits dans [ORCHESTRATION.md](ORCHESTRATION.md), avec preuves dans [QA-ORCHESTRATOR.md](QA-ORCHESTRATOR.md).
 
-Le serveur livré n'injecte aucun adaptateur : son diagnostic v1 annonce `available:false` et `liveGeneration:false`. Les exécutions de tests sont `mode:example`, leurs fichiers sont virtuels et leurs contrôles n'exécutent aucun code généré. Le pont CLI historique reste facultatif, distinct et en lecture seule. L'interface n'est pas encore raccordée au nouveau moteur.
+Sans configuration explicite, le diagnostic v1 annonce `available:false` et `liveGeneration:false`. Avec clé API côté serveur, modèle explicite et activation, le moteur peut injecter l'adaptateur OpenAI Responses sans outils et matérialiser des instantanés de projets contrôlés. Ce transport est vérifié par HTTP injecté uniquement ; une fixture en mode `real` dans un test ne prouve aucun appel réel. Les contrôles factices restent réservés à `example` et ne peuvent valider les projets réels. Le pont CLI reste indépendant ; l'interface n'est pas encore raccordée au nouveau moteur.
 
-Les sections ci-dessous conservent le bilan initial de construction et ses limites datées ; les nombres de tests historiques ne remplacent pas le rapport de cette étape. L'adaptateur réel, l'isolation système et la génération d'applications restent à réaliser.
+Le diagnostic `generation:check` observe génération désactivée, clé et modèle absents. Le CLI détecté lors de cette inspection est `0.164.0-alpha.11.1` ; le moteur Docker n'est pas accessible et WSL refuse l'énumération dans ce contexte. Aucun code généré n'est exécuté sur l'hôte. Premier projet fournisseur, contrôles clients isolés, aperçu et recette complète restent non vérifiés ou à implémenter. Voir [GENERATION.md](GENERATION.md) et [QA-GENERATION.md](QA-GENERATION.md).
+
+Les sections ci-dessous conservent le bilan initial daté ; leurs versions et nombres de tests historiques ne remplacent pas l'état et les preuves ci-dessus.
 
 Ce document distingue l'environnement de construction, les fonctions du MVP et les intégrations à activer. La présence d'un outil ne prouve ni son authentification ni la réussite d'une tâche.
 

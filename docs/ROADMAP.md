@@ -5,14 +5,14 @@ Référence : `PRODUCT.md`, cadrage du 4 novembre 2026. Ces étapes font évolue
 ## Progression et état
 Chaque étape produit un résultat vérifiable et une revue indépendante. Le coordinateur rapporte fichiers touchés, contrôles, preuves et limites. Il préserve le travail existant et ne clôture pas une étape sur un simple statut d'agent.
 
-Le lot courant couvre l'étape 3, à la demande de l'utilisateur après clôture des contrats. Les étapes 4 à 6 restent planifiées et ne sont pas implémentées dans ce lot. La simulation et le pont d'analyse en lecture seule sont préservés.
+Le lot courant couvre l'étape 4, à la demande de l'utilisateur après clôture de l'orchestrateur. Son implémentation et ses tests hors ligne sont disponibles ; la première génération fournisseur reste non vérifiée faute de configuration API. Les étapes 5 et 6 restent planifiées. La simulation et le pont d'analyse restent distincts du nouveau transport.
 
 | Étape | État | Dépendance | Critères produit principalement couverts |
 | --- | --- | --- | --- |
 | 1. Cadrage et règles globales | Terminée — cadrage documentaire revu | Audit de l'existant effectué dans cette conversation | Définit 1 à 15, sans les valider |
 | 2. Contrats des six rôles | Terminée — contrats revus, moteur non implémenté | Étape 1 | 3, 4, 12 |
 | 3. Orchestrateur persistant | Terminée — vérifiée sur adaptateur injecté | Étape 2 | 2, 4, 8, 9, 10 sur adaptateur injecté |
-| 4. Génération réelle isolée | À réaliser | Étape 3 | 5, 6, 7 |
+| 4. Génération réelle isolée | Implémentée hors ligne — ouverte, premier essai API non vérifié | Étape 3 | 5, 6, 7 |
 | 5. Boucle de qualité | À réaliser | Étape 4 | 10, 11, 12 |
 | 6. Interface, aperçu et recette complète | À réaliser | Étape 5 | 1, 2, 7, 13, 14, 15 et recette de l'ensemble |
 
@@ -75,4 +75,6 @@ L'étape 3 ajoute le moteur serveur et son API v1, le journal JSON local validé
 
 Clôture de l'étape 3 le 4 novembre 2026 : 29 tests d'orchestrateur réussis, suite complète de 81 tests (39 frontend, 13 pont, 29 moteur), TypeScript et build réussis. Revue indépendante des corrections clôturée sans constat ouvert. Le contrôle des contrats et les liens locaux sont vérifiés. Les preuves concernent l'usine et son pipeline injecté ; aucun critère de génération réelle n'est déclaré satisfait.
 
-**Prochaine étape : 4 — génération réelle isolée.** Définir et vérifier les droits d'écriture système et d'exécution, puis connecter l'adaptateur réel aux contrats sans affaiblir le pont historique. La recette réelle exige son activation autorisée et l'information sur la consommation. Les étapes 4 à 6 restent à réaliser.
+L'étape 4 ajoute l'adaptateur OpenAI Responses sans outils, les propositions structurées validées puis projetées vers le contrat v1, les instantanés physiques versionnés, les contrôles de chemins/liens/collisions et d'intégrité, le socle de dépendances verrouillé et un script de premier essai. Les appels API sont distincts du CLI et demandent clé, modèle explicite et activation côté serveur. Les preuves factices ne peuvent pas valider un projet réel. Voir [GENERATION.md](GENERATION.md), [QA-GENERATION.md](QA-GENERATION.md) et [REVIEW-GENERATION.md](REVIEW-GENERATION.md).
+
+**Étape courante non clôturée : 4 — premier essai réel à effectuer.** `generation:check` constate activation désactivée, clé et modèle absents ; aucun appel API réel ni compilation d'application générée n'a été effectué. L'implémentation hors ligne et sa revue ne satisfont pas le critère G-8. La prochaine action est de configurer localement le transport puis d'exécuter et consigner l'essai borné, en tenant compte de sa consommation possible. Après cette preuve, l'étape 5 sera la boucle de qualité avec exécution cliente réellement isolée. Le moteur Docker observé n'est pas accessible ; sa disponibilité devra être résolue ou une autre isolation explicite choisie avant ces commandes.

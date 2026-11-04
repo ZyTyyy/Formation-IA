@@ -1,6 +1,6 @@
 # Contrats des six rôles — version 1
 
-Date : 4 novembre 2026. Références : [AGENTS.md](../AGENTS.md), [PRODUCT.md](PRODUCT.md) et [ROADMAP.md](ROADMAP.md). Les contrats v1 sont désormais appliqués par le moteur de test de l'étape 3, accessible via l'API `/api/v1/` ; ils ne sont pas chargés par le pont CLI historique. L'application à un runtime réel reste à l'étape 4. Les paragraphes de conception ci-dessous restent la référence pour cette cible ; [ORCHESTRATION.md](ORCHESTRATION.md) distingue ce qui est implémenté sur données virtuelles de ce qui reste à connecter.
+Date : 4 novembre 2026. Références : [AGENTS.md](../AGENTS.md), [PRODUCT.md](PRODUCT.md) et [ROADMAP.md](ROADMAP.md). Les contrats v1 sont appliqués par l'orchestrateur de l'étape 3, accessible via l'API `/api/v1/`, et par la projection de transport de l'étape 4 ; le pont CLI historique ne les charge pas. Le transport réel et les instantanés physiques sont implémentés mais vérifiés hors ligne seulement. [ORCHESTRATION.md](ORCHESTRATION.md) décrit le moteur ; [GENERATION.md](GENERATION.md) précise les capacités implémentées et le premier appel fournisseur encore non vérifié.
 
 ## Portée et transmission des consignes
 
@@ -10,7 +10,7 @@ Les chemins sont relatifs à l'espace confié. `workspaceId` est un identifiant 
 
 Le pont actuel dans `server/bridge.mjs` utilise `ROLES`, transmet `{role, brief}`, désactive les sous-agents et conserve la lecture seule. Il ne charge ni ce contrat ni les instructions TOML comme un pipeline de génération. Les TOML peuvent servir aux délégations natives du chat selon les capacités effectives ; cela n'implémente pas le moteur web.
 
-Pour le futur adaptateur, le serveur devra :
+Tout adaptateur doit respecter les obligations suivantes :
 
 1. Résoudre le rôle dans une liste fixe, charger le TOML local de confiance et son `developer_instructions`, puis enregistrer son empreinte et la version du contrat.
 2. Fournir comme consignes de confiance les règles globales, ce contrat et les instructions du rôle. Ne pas dépendre de la découverte implicite d'un fichier dans l'espace généré. Si le runtime ne sait pas maintenir la séparation entre consignes et données, déclarer cette capacité non disponible.
@@ -18,11 +18,11 @@ Pour le futur adaptateur, le serveur devra :
 4. Capturer l'identité de l'exécution réelle, les événements et les sorties. Recueillir un objet résultat final conforme au schéma ; le serveur vérifie ensuite les fichiers, versions, preuves et conditions métier avant d'accepter le résultat.
 5. Enregistrer la décision d'acceptation séparément du statut déclaré par l'agent. Un `ready` ou un code de sortie 0 ne suffit jamais à lancer le rôle suivant.
 
-Le chargement, le transport, le contrôle des fichiers et le validateur d'exécution sont à implémenter. Les schémas JSON ci-dessous sont des contrats de données ; ils ne constituent ni une isolation ni une autorisation d'outil.
+Le chargement, la validation et les contrôles sont implémentés dans l'orchestrateur ; l'étape 4 ajoute le transport sans outils et les instantanés contrôlés. Leur fonctionnement fournisseur effectif reste non vérifié. Les schémas JSON ci-dessous sont des contrats de données ; ils ne constituent ni une isolation ni une autorisation d'outil.
 
 ## Enveloppe de mission
 
-Schéma normatif : [agent-mission.schema.json](../contracts/agent-mission.schema.json), JSON Schema 2020-12. Les objets refusent les champs inconnus. Les identifiants sont opaques, non vides et propres au serveur ; les chemins utilisent `/`, sans chemin absolu, segment vide, `.` ou `..`, ni antislash. Un chemin terminé par `/` dans les permissions autorise ce sous-arbre uniquement. Les liens et chemins résolus restent à vérifier côté système.
+Schéma normatif : [agent-mission.schema.json](../contracts/agent-mission.schema.json), JSON Schema 2020-12. Les objets refusent les champs inconnus. Les identifiants sont opaques, non vides et propres au serveur ; les chemins utilisent `/`, sans chemin absolu, segment vide, `.` ou `..`, ni antislash. Un chemin terminé par `/` dans les permissions autorise ce sous-arbre uniquement. Les liens et chemins résolus sont contrôlés par le gestionnaire d'instantanés ; tout futur adaptateur d'exécution devra maintenir ces vérifications côté système.
 
 | Champ obligatoire | Signification |
 | --- | --- |
@@ -133,4 +133,6 @@ Les exemples JSON de [agent-contract-examples.json](../contracts/agent-contract-
 
 Contrôle reproductible depuis la racine : `python scripts/check_agent_contracts.py`. Prérequis de développement : Python 3.11 ou plus et le paquet `jsonschema` déjà installé ; aucun paquet n'est téléchargé par ce contrôle et ces outils ne sont pas des dépendances du produit Node. Le contrôle parse les six TOML, vérifie les schémas et exemples, et exerce des rejets de structure (rôle, version, chemins et statuts incohérents). Il ne vérifie ni l'existence de fichiers générés ni l'authenticité des preuves.
 
-L'étape 2 a vérifié la syntaxe des six TOML, la cohérence des noms et des instructions, la validité des schémas et exemples, puis une revue indépendante. L'étape 3 ajoute le chargement explicite, les validateurs serveur et les tests sémantiques sur des fichiers virtuels avec un adaptateur injecté. Aucun outil d'écriture système ni pipeline réel n'est livré ; les frontières système et un véritable projet généré relèvent de l'étape 4.
+L'étape 2 a vérifié la syntaxe des six TOML, la cohérence des noms et des instructions, la validité des schémas et exemples, puis une revue indépendante. L'étape 3 ajoute le chargement explicite, les validateurs serveur et les tests sémantiques sur des fichiers virtuels avec un adaptateur injecté.
+
+L'étape 4 implémente la projection de transport décrite dans [GENERATION.md](GENERATION.md) : le modèle propose des fichiers et une décision structurés, puis le serveur effectue les opérations d'écriture/capture et construit le résultat v1 avec versions et identités observées. Les preuves demeurent `not_run`, aucun outil ou shell n'est fourni au modèle, et le serveur refuse les preuves factices dans un run `real`. Les identifiants `resp_…` proviennent du fournisseur et chaque requête est sans historique d'auteur réutilisé. Le socle de dépendances est fourni par le serveur ; le développeur doit produire les points d'entrée React, configurations et autres fichiers requis. Le transport et l'écriture sont vérifiés hors ligne uniquement ; premier projet fournisseur et contrôles clients restent non vérifiés.

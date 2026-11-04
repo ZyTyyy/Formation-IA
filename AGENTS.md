@@ -5,13 +5,13 @@ Construire une usine locale qui transforme un brief en application web exécutab
 
 `docs/PRODUCT.md` définit la cible et les critères d'acceptation ; `docs/ROADMAP.md` définit les étapes et leurs preuves. `docs/AGENT-CONTRACTS.md` et `contracts/*.schema.json` définissent les missions, résultats et conditions de transmission des six rôles. `docs/UX.md`, `docs/ARCHITECTURE.md` et `docs/CAPABILITIES.md` décrivent l'existant tant qu'une étape ne les a pas explicitement actualisés. Les rapports QA, de revue et d'exécution sont des preuves datées, limitées à leur périmètre.
 
-L'existant produit des simulations, propose un pont CLI d'analyse en lecture seule et possède un orchestrateur persistant testé avec adaptateur injecté `example` (voir `docs/ORCHESTRATION.md`). Aucun adaptateur n'est activé dans le serveur livré ; la génération réelle reste à implémenter. Ne jamais présenter une capacité prévue comme disponible, une animation comme une exécution ou un rôle comme un agent autonome actif sans preuve.
+L'existant produit des simulations, propose un pont CLI d'analyse en lecture seule et possède un orchestrateur persistant (voir `docs/ORCHESTRATION.md`). L'adaptateur de génération OpenAI Responses sans outils et les instantanés contrôlés sont implémentés, désactivés par défaut et vérifiés uniquement hors ligne ; le premier projet issu du fournisseur réel reste non vérifié (voir `docs/GENERATION.md`). Ne jamais présenter une capacité prévue comme disponible, une animation comme une exécution ou un rôle comme un agent autonome actif sans preuve.
 
 ## Deux périmètres distincts
 - **Développer l'usine** : modifier ce dépôt et ses documents selon la tâche autorisée.
-- **Produire une application** : travailler dans un espace propre au projet généré, avec ses sources, documents, tests et preuves. Ce parcours n'est pas encore implémenté.
+- **Produire une application** : travailler dans un espace propre au projet généré, avec ses sources, documents, tests et preuves. Les fichiers peuvent être matérialisés par le serveur ; exécution des contrôles clients, aperçu, export et recette complète restent à implémenter.
 
-Les chemins de livrables ci-dessous sont relatifs au périmètre explicitement confié. Une mission de génération ne doit pas écraser les documents ou le code de l'usine. Les fichiers de rôles sont alignés sur le contrat v1, explicitement chargés et validés par le moteur de test ; leur transmission à un runtime réel reste à implémenter. Leur présence ne prouve pas une délégation.
+Les chemins de livrables ci-dessous sont relatifs au périmètre explicitement confié. Une mission de génération ne doit pas écraser les documents ou le code de l'usine. Les fichiers de rôles sont alignés sur le contrat v1, explicitement chargés et épinglés ; leur transmission au transport réel est implémentée et testée sur HTTP injecté, sans appel fournisseur observé. Leur présence ne prouve pas une délégation.
 
 ## Travail d'équipe
 - Product Manager : `docs/PRODUCT.md`, critères d'acceptation et périmètre.
@@ -62,8 +62,8 @@ Une étape documentaire est terminée lorsque périmètre, contrats et critères
 Associer toute preuve à son périmètre, sa version, sa commande ou procédure, son résultat et sa date. Les démos et adaptateurs factices ne prouvent ni appel modèle, ni tests sur une application réellement générée, ni compilation de celle-ci. Sans preuve, indiquer « non vérifié ». Une remise partielle reste identifiée comme telle, sans statut de livraison complète.
 
 ## Système et autorisations
-Le navigateur ne reçoit pas les outils internes du chat Codex. Le pont CLI actuel reste local, désactivé par défaut et en lecture seule ; ne pas assouplir ses protections pour simuler l'arrivée du moteur de génération. Le futur mode d'écriture exige une isolation et une politique d'outils explicites.
+Le navigateur ne reçoit pas les outils internes du chat Codex. Le pont CLI actuel reste local, désactivé par défaut et en lecture seule. Le générateur API est distinct : aucun outil modèle, seules données structurées puis écritures contrôlées par le serveur. N'exécuter aucun script, configuration ou source générés sur l'hôte ; l'étape 5 exige une isolation d'exécution explicite. Les instantanés ne sont pas une racine HTTP ; l'aperçu de l'étape 6 exige une origine distincte.
 
-Une session authentifiée et un quota sont nécessaires pour les vrais jobs ; signaler la consommation possible avant activation. L'étape 3 d'orchestration n'autorise aucun appel modèle réel ni publication. Les actions locales réversibles nécessaires à une tâche déjà autorisée ne demandent pas une confirmation supplémentaire.
+Une session authentifiée et un quota sont nécessaires pour les vrais jobs ; le générateur API exige une clé côté serveur, un modèle explicite et FACTORY_GENERATION_ENABLED=1. Signaler consommation possible, plafonds techniques et absence de plafond financier avant activation. L'étape 3 n'a autorisé aucun appel réel ; l'étape 4 prépare le premier essai, encore non vérifié faute de configuration API. Une annulation locale ne garantit pas l'arrêt du calcul ou de la facturation distants. Les actions locales réversibles nécessaires à une tâche déjà autorisée ne demandent pas une confirmation supplémentaire.
 
 Garder les limites de sécurité et les politiques du parent. Ne jamais contourner les approbations. MCP et skills hérités restent soumis aux capacités du runtime. Aucun serveur MCP externe activé automatiquement. Publications, transmissions externes et opérations irréversibles restent soumises aux autorisations effectives.

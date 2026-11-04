@@ -13,8 +13,11 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "vitest run && node --test server/bridge.test.mjs server/orchestrator.test.mjs",
-    "test:orchestrator": "node --test server/orchestrator.test.mjs"
+    "test": "vitest run && node --test server/bridge.test.mjs server/orchestrator.test.mjs server/generation.test.mjs",
+    "test:orchestrator": "node --test server/orchestrator.test.mjs",
+    "test:generation": "node --test server/generation.test.mjs",
+    "generation:check": "node scripts/generate-smoke.mjs --check",
+    "generation:smoke": "node scripts/generate-smoke.mjs --run"
   },
   "dependencies": {
     "ajv": "8.20.0",

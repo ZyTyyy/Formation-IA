@@ -37,9 +37,19 @@ Une seule mission réelle est admise, durée maximale 120 secondes, sortie limit
 
 Le backend possède désormais une API `/api/v1/` pour les runs, les six missions, les tentatives et les événements persistants. Le stockage local est dans `.local/orchestrator/` (ignoré par Git). Les règles et routes sont décrites dans [docs/ORCHESTRATION.md](docs/ORCHESTRATION.md).
 
-Le serveur livré ne reçoit **aucun adaptateur d'exécution** : il conserve des brouillons mais refuse leur lancement. Les tests injectent un adaptateur `example` avec fichiers virtuels et preuves factices ; ils ne génèrent pas d'application réelle. Le pont CLI ci-dessus conserve sa fonction indépendante d'analyse en lecture seule. Le parcours de l'interface reste une simulation ; le raccordement au nouveau moteur viendra à l'étape 6.
+Par défaut le serveur ne reçoit **aucun adaptateur d'exécution** : il conserve des brouillons mais refuse leur lancement. Les tests injectent un adaptateur `example` avec fichiers virtuels et preuves factices. L'adaptateur API de l'étape 4 peut être activé explicitement comme décrit ci-dessous. Le parcours de l'interface reste une simulation ; le raccordement au nouveau moteur viendra à l'étape 6.
 
 Pour vérifier le moteur seul : `npm run test:orchestrator`. Pour le diagnostic local : `GET /api/v1/orchestration`. Les rapports propres à ce lot sont [QA-ORCHESTRATOR.md](docs/QA-ORCHESTRATOR.md) et [REVIEW-ORCHESTRATOR.md](docs/REVIEW-ORCHESTRATOR.md).
+
+## Génération de fichiers — étape 4 en attente d'essai réel
+
+L'adaptateur OpenAI Responses produit des fichiers structurés ; le serveur applique les droits des rôles et publie des instantanés propres au projet dans `.local/projects/`. Aucun outil modèle ni commande cliente n'est exposé. Le manifeste et le verrou proviennent d'un socle contrôlé. Les tests utilisent des réponses HTTP injectées : **le premier projet fournisseur réel reste non vérifié**, la clé API et le modèle étant absents de l'environnement vérifié.
+
+Configuration distincte du CLI et de ce chat : `FACTORY_GENERATION_ENABLED=1`, `FACTORY_GENERATION_MODEL` explicite et `OPENAI_API_KEY` dans l'environnement serveur. `.env` n'est pas chargé automatiquement. Ne jamais coller la clé dans le chat ou dans le frontend. Les appels API sont potentiellement facturables ; maximum 12 tentatives par projet, 180 secondes par mission, 18 minutes cumulées et 16 384 tokens de sortie demandés par requête. Aucun plafond monétaire garanti ; un arrêt local ne garantit pas l'arrêt de la facturation distante.
+
+`npm run generation:check` vérifie la présence de la configuration sans appel API. Après configuration et vérification du quota, `npm run generation:smoke` lance le scénario de dépenses et affiche le run, les réponses observées et l'instantané ; arrêter d'abord le serveur qui possède le même journal. Il ne lance pas les commandes clientes. Son code 0 atteste seulement l'acceptation des fichiers du développeur ; QA reste normalement bloquée et `deliveryVerified` faux jusqu'à l'étape 5. `npm start` avec ces variables rend aussi le transport disponible par l'API v1, sans appel au démarrage.
+
+Détails, limites d'isolation et procédure : [GENERATION.md](docs/GENERATION.md). Vérification hors ligne : `npm run test:generation`, [QA-GENERATION.md](docs/QA-GENERATION.md) et [REVIEW-GENERATION.md](docs/REVIEW-GENERATION.md). Exécution isolée des tests clients, corrections, aperçu et export restent les étapes suivantes.
 
 ## Vérifier et compiler
 
@@ -76,6 +86,6 @@ docs/                         Produit, UX, architecture, QA et revue
 
 Le build est prêt pour un hébergement statique privé Sites, mais sa publication n’a pas été autorisée par la vérification automatique : l’accord explicite de l’utilisateur pour l’envoi du code vers cette destination externe reste nécessaire. Aucun code n’a été poussé. Une fiche Site privée non publiée a été créée ; son identifiant est conservé dans `.openai/hosting.json` pour reprendre sans doublon.
 
-Une version hébergée conserverait les simulations dans le navigateur et n’accéderait pas au serveur local du visiteur. Les missions CLI réelles nécessitent la version lancée localement avec son backend. Il n’y a pas de compte applicatif, de base multi-utilisateur, de synchronisation cloud, de génération de code autonome depuis un brief, ni d’orchestration d’écriture dans ce MVP.
+Une version hébergée conserverait les simulations dans le navigateur et n’accéderait pas au serveur local du visiteur. Les missions CLI et la génération API nécessitent la version locale avec son backend et leurs configurations distinctes. Il n’y a pas de compte applicatif, de base multi-utilisateur ni de synchronisation cloud. La génération API n'est pas encore raccordée à l'interface ni validée par un premier projet fournisseur réel.
 
 Configuration des rôles et CLI vérifiés avec la [documentation officielle des sous-agents](https://learn.chatgpt.com/docs/agent-configuration/subagents), la [référence de configuration](https://learn.chatgpt.com/docs/config-file/config-reference) et le [mode non interactif](https://learn.chatgpt.com/docs/non-interactive-mode).

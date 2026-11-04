@@ -15,7 +15,7 @@ const reference = object({ runId: string, missionId: string, attempt: integer, e
 const schema = object({
   schemaVersion: { const: 1 }, reservation: { anyOf: [reference, { type: 'null' }] },
   runs: array(object({
-    id: string, projectId: string, workspaceId: string, mode: { const: 'example' }, brief: string,
+    id: string, projectId: string, workspaceId: string, mode: { enum: ['example', 'real'] }, brief: string,
     state: { enum: statuses }, createdAt: string, updatedAt: string,
     budget: object({ maxTotalAttempts: integer, maxRunMs: integer, usedAttempts: integer, elapsedMs: integer }),
     limits: object({ timeoutMs: integer, maxAttempts: integer, maxOutputBytes: integer }),
@@ -59,7 +59,7 @@ export function validateState(state) {
       for (const [number, attempt] of mission.attempts.entries()) {
         attempts++;
         chargedMs += attempt.chargedMs;
-        if (attempt.number !== number + 1 || attempt.mission.attempt !== attempt.number || attempt.mission.runId !== run.id || attempt.mission.missionId !== mission.id || attempt.mission.role !== mission.role || attempt.mission.mode !== 'example' || executions.has(attempt.executionId)) fail('STORE_CORRUPT', 'Tentative persistée incohérente.', 500);
+        if (attempt.number !== number + 1 || attempt.mission.attempt !== attempt.number || attempt.mission.runId !== run.id || attempt.mission.missionId !== mission.id || attempt.mission.role !== mission.role || attempt.mission.mode !== run.mode || executions.has(attempt.executionId)) fail('STORE_CORRUPT', 'Tentative persistée incohérente.', 500);
         executions.add(attempt.executionId);
         if (!attempt.closeConfirmed) openAttempts++;
         if (!Number.isFinite(Date.parse(attempt.startedAt)) || (attempt.finishedAt !== null && !Number.isFinite(Date.parse(attempt.finishedAt)))) fail('STORE_CORRUPT', 'Date de tentative invalide.', 500);
@@ -76,6 +76,7 @@ export function validateState(state) {
       }
     }
     if (attempts !== run.budget.usedAttempts || attempts > run.budget.maxTotalAttempts || chargedMs !== run.budget.elapsedMs) fail('STORE_CORRUPT', 'Compteur de tentatives ou durée incohérent.', 500);
+    if (run.mode === 'real' && run.evidence.length) fail('STORE_CORRUPT', 'Une preuve injectée ne peut pas valider un projet réel.', 500);
     for (const [path, file] of Object.entries(run.files)) {
       if (!validPath(path) || file.revision !== hash(file.content)) fail('STORE_CORRUPT', 'Fichier persistant invalide.', 500);
     }
