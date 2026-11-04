@@ -5,12 +5,12 @@ Référence : `PRODUCT.md`, cadrage du 4 novembre 2026. Ces étapes font évolue
 ## Progression et état
 Chaque étape produit un résultat vérifiable et une revue indépendante. Le coordinateur rapporte fichiers touchés, contrôles, preuves et limites. Il préserve le travail existant et ne clôture pas une étape sur un simple statut d'agent.
 
-L'autorisation courante couvre l'étape 1. Les étapes suivantes sont planifiées et ne sont pas implémentées dans ce lot. La simulation et le pont d'analyse en lecture seule sont préservés.
+Le lot courant couvre l'étape 2, à la demande de l'utilisateur après clôture du cadrage. Les étapes 3 à 6 restent planifiées et ne sont pas implémentées dans ce lot. La simulation et le pont d'analyse en lecture seule sont préservés.
 
 | Étape | État | Dépendance | Critères produit principalement couverts |
 | --- | --- | --- | --- |
 | 1. Cadrage et règles globales | Terminée — cadrage documentaire revu | Audit de l'existant effectué dans cette conversation | Définit 1 à 15, sans les valider |
-| 2. Contrats des six rôles | À réaliser | Étape 1 | 3, 4, 12 |
+| 2. Contrats des six rôles | Terminée — contrats revus, moteur non implémenté | Étape 1 | 3, 4, 12 |
 | 3. Orchestrateur persistant | À réaliser | Étape 2 | 2, 4, 8, 9, 10 |
 | 4. Génération réelle isolée | À réaliser | Étape 3 | 5, 6, 7 |
 | 5. Boucle de qualité | À réaliser | Étape 4 | 10, 11, 12 |
@@ -65,4 +65,8 @@ Les critères sont cumulatifs. Les étapes techniques préparent les contrats d'
 ## Preuves de l'étape courante
 L'étape 1 est clôturée le 4 novembre 2026 : revue indépendante sans défaut bloquant dans [REVIEW-PLANNING.md](REVIEW-PLANNING.md), références documentaires vérifiées et `git diff --check` réussi. Le coordinateur a exécuté `npm run typecheck`, `npm test` (39 tests frontend et 13 backend, soit 52 réussis) et `npm run build` avec succès. Ces contrôles portent sur l'usine actuelle ; aucun job modèle réel n'a été lancé par le pont et aucune application cliente n'a été générée dans ce lot.
 
-Les résultats historiques de `QA-UX.md` ne prouvent pas le fonctionnement de la cible. Les étapes 2 à 6 et les 15 critères d'implémentation restent à réaliser. Prochaine étape : contrats des six rôles, sans activation du moteur réel.
+L'étape 2 est clôturée le 4 novembre 2026. Le lot comprend [AGENT-CONTRACTS.md](AGENT-CONTRACTS.md), les six TOML alignés, deux schémas JSON et des exemples explicitement fictifs. Le contrôle `python scripts/check_agent_contracts.py` réussit : six TOML, deux schémas et sept exemples valides, vingt cas invalides rejetés. La [revue indépendante](REVIEW-CONTRACTS.md) est terminée sans constat correctif ouvert, après correction du défaut d'ancrage des identifiants et chemins et précision du protocole de retour des preuves.
+
+Contrôles de l'usine exécutés par le coordinateur : `npm run typecheck`, `npm test` (39 frontend + 13 backend = 52 réussis) et `npm run build`, tous avec code 0. Références du lot vérifiées et `git diff --check` réussi. Aucun fichier de `src/`, `server/` ou `.codex/config.toml` n'a été modifié ; aucun job réel n'a été lancé via le pont. Aucun chargement automatique des TOML, validateur serveur ou cycle réel de génération n'est activé.
+
+Les résultats historiques de `QA-UX.md` ne prouvent pas le fonctionnement de la cible. Les 15 critères d'implémentation restent à vérifier par le futur moteur et la recette complète. Prochaine étape après clôture du lot : orchestrateur persistant avec adaptateur injecté, sans appel modèle facturable.

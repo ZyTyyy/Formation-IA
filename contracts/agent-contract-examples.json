@@ -1,0 +1,267 @@
+{
+  "description": "Fixtures de contrat uniquement : aucune mission exécutée, preuve ou fichier généré. Identités, versions et limites fictives ; ne pas charger comme exécution réelle.",
+  "missions": [
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-pm-1",
+      "attempt": 1,
+      "role": "product_manager",
+      "inputRevision": "example-brief-1",
+      "context": "application",
+      "workspaceId": "example-expenses",
+      "projectId": "example-project",
+      "runId": "example-run",
+      "purpose": "initial",
+      "objective": "Cadrer le gestionnaire de dépenses personnel dans le périmètre local.",
+      "brief": "Une application personnelle pour saisir mes dépenses en euros, les classer et voir le total du mois, avec conservation sur cet appareil.",
+      "inputs": [],
+      "dependencies": [],
+      "permissions": {
+        "readPaths": [],
+        "writePaths": [
+          "docs/PRODUCT.md"
+        ],
+        "commandIds": []
+      },
+      "expectedArtifacts": [
+        "docs/PRODUCT.md"
+      ],
+      "acceptanceCriteria": [
+        {
+          "id": "PM-1",
+          "description": "Périmètre, exclusions, hypothèses et critères métier numérotés exploitables."
+        }
+      ],
+      "limits": {
+        "timeoutMs": 120000,
+        "maxAttempts": 2,
+        "maxOutputBytes": 262144
+      },
+      "mustDifferFromExecutionIds": []
+    },
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-review-1",
+      "attempt": 1,
+      "role": "code_reviewer",
+      "inputRevision": "example-tested-1",
+      "context": "application",
+      "workspaceId": "example-expenses",
+      "projectId": "example-project",
+      "runId": "example-run",
+      "purpose": "initial",
+      "objective": "Examiner indépendamment la version testée et les constats QA.",
+      "brief": "Une application personnelle pour saisir mes dépenses en euros, les classer et voir le total du mois, avec conservation sur cet appareil.",
+      "inputs": [
+        {
+          "path": "docs/PRODUCT.md",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-pm-1"
+        },
+        {
+          "path": "docs/UX.md",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-ux-1"
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-arch-1"
+        },
+        {
+          "path": "docs/CAPABILITIES.md",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-arch-1"
+        },
+        {
+          "path": "src/domain.ts",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-dev-1"
+        },
+        {
+          "path": "src/App.tsx",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-dev-1"
+        },
+        {
+          "path": "src/domain.test.ts",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-dev-1"
+        },
+        {
+          "path": "docs/QA.md",
+          "revision": "example-tested-1",
+          "producerMissionId": "example-qa-1"
+        },
+        {
+          "path": ".evidence/changes.diff",
+          "revision": "example-tested-1",
+          "producerMissionId": null
+        }
+      ],
+      "dependencies": [
+        "example-pm-1",
+        "example-ux-1",
+        "example-arch-1",
+        "example-dev-1",
+        "example-qa-1"
+      ],
+      "permissions": {
+        "readPaths": [
+          "docs/PRODUCT.md",
+          "docs/UX.md",
+          "docs/ARCHITECTURE.md",
+          "docs/CAPABILITIES.md",
+          "docs/QA.md",
+          ".evidence/changes.diff",
+          "src/",
+          "package.json",
+          "package-lock.json",
+          "README.md"
+        ],
+        "writePaths": [
+          "docs/REVIEW.md"
+        ],
+        "commandIds": []
+      },
+      "expectedArtifacts": [
+        "docs/REVIEW.md"
+      ],
+      "acceptanceCriteria": [
+        {
+          "id": "REVIEW-1",
+          "description": "Constats priorisés sur le calcul, les dates et la persistance, avec impact et reproduction."
+        }
+      ],
+      "limits": {
+        "timeoutMs": 120000,
+        "maxAttempts": 2,
+        "maxOutputBytes": 262144
+      },
+      "mustDifferFromExecutionIds": [
+        "example-dev-session",
+        "example-qa-session"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-pm-1",
+      "attempt": 1,
+      "role": "product_manager",
+      "inputRevision": "example-brief-1",
+      "status": "ready",
+      "summary": "Exemple fictif de réponse PM ; aucun livrable réel n'a été créé.",
+      "artifacts": [
+        {
+          "path": "docs/PRODUCT.md",
+          "revision": "example-pm-output-1"
+        }
+      ],
+      "checks": [],
+      "findings": [],
+      "blockers": [],
+      "nextAction": "Faire vérifier le livrable PM par le coordinateur avant UX."
+    },
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-pm-1",
+      "attempt": 1,
+      "role": "product_manager",
+      "inputRevision": "example-brief-1",
+      "status": "blocked",
+      "summary": "Exemple fictif de réponse PM ; aucun livrable réel n'a été créé.",
+      "artifacts": [],
+      "checks": [],
+      "findings": [],
+      "blockers": [
+        {
+          "code": "OUT_OF_SCOPE",
+          "message": "Le brief exige une connexion bancaire, exclue de la première version."
+        }
+      ],
+      "nextAction": "Proposer un suivi local manuel puis attendre le choix de périmètre."
+    },
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-ux-1",
+      "attempt": 1,
+      "role": "ux_designer",
+      "inputRevision": "example-brief-1",
+      "status": "blocked",
+      "summary": "Exemple fictif de réponse PM ; aucun livrable réel n'a été créé.",
+      "artifacts": [],
+      "checks": [],
+      "findings": [],
+      "blockers": [
+        {
+          "code": "MISSING_INPUT",
+          "message": "Le cadrage PM accepté est absent ; ne pas lire le PRODUCT de l'usine à sa place."
+        }
+      ],
+      "nextAction": "Obtenir le livrable PM accepté avant conception."
+    },
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-qa-1",
+      "attempt": 1,
+      "role": "qa_engineer",
+      "inputRevision": "example-code-1",
+      "status": "needs_changes",
+      "summary": "Exemple fictif de réponse PM ; aucun livrable réel n'a été créé.",
+      "artifacts": [
+        {
+          "path": "docs/QA.md",
+          "revision": "example-qa-output-1"
+        }
+      ],
+      "checks": [
+        {
+          "criterionId": "AC-4",
+          "status": "failed",
+          "evidenceId": "example-evidence-1",
+          "note": "Preuve fictive de forme : total mensuel incorrect, aucune commande exécutée."
+        }
+      ],
+      "findings": [
+        {
+          "id": "EX-F1",
+          "priority": "P1",
+          "path": "src/domain.ts",
+          "line": 12,
+          "description": "Exemple de défaut : total calculé sur tous les mois.",
+          "reproduction": "Exemple : saisir 10 EUR en janvier et 20 EUR en février ; filtrer janvier, total attendu 10 EUR."
+        }
+      ],
+      "blockers": [],
+      "nextAction": "Transmettre le rapport au reviewer puis préparer une correction bornée."
+    },
+    {
+      "contractVersion": 1,
+      "mode": "example",
+      "missionId": "example-pm-1",
+      "attempt": 1,
+      "role": "product_manager",
+      "inputRevision": "example-brief-1",
+      "status": "failed",
+      "summary": "Exemple fictif de réponse PM ; aucun livrable réel n'a été créé.",
+      "artifacts": [],
+      "checks": [],
+      "findings": [],
+      "blockers": [
+        {
+          "code": "ADAPTER_ERROR",
+          "message": "Exemple d'erreur technique avant production du document."
+        }
+      ],
+      "nextAction": "Confirmer l'arrêt et examiner le diagnostic avant une éventuelle nouvelle tentative."
+    }
+  ]
+}

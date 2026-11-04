@@ -57,7 +57,7 @@ Les chemins ci-dessous sont relatifs à l'application produite et ne désignent 
 | Revue | Même version, diff et résultats QA | `docs/REVIEW.md`, constats priorisés | Défauts bloquants renvoyés en correction |
 | Correction et livraison | Constats et échecs | Version corrigée, preuves, aperçu et export | Aucun défaut bloquant ouvert ; contrôles et revue à jour |
 
-Les contrats détaillés seront définis à l'étape 2. Le coordinateur gère les transitions ; aucun rôle ne s'attribue toutes les validations. Une modification des entrées entraîne la revalidation des étapes dépendantes.
+Les contrats détaillés sont définis dans [AGENT-CONTRACTS.md](AGENT-CONTRACTS.md) et les schémas du dossier `contracts/` ; leur application par le moteur reste à implémenter. Le coordinateur gère les transitions ; aucun rôle ne s'attribue toutes les validations. Une modification des entrées entraîne la revalidation des étapes dépendantes.
 
 ## Critères d'acceptation de la cible
 Ces critères doivent être démontrés avant de déclarer la première version réelle livrée. Leur rédaction ne vaut pas réussite.
