@@ -31,3 +31,8 @@ Aucune mission modèle n’a été lancée via le pont web pendant les tests. Le
 49 tests ont réussi (36 frontend et 13 backend), ainsi que TypeScript et le build de production. L’audit npm installé ne signale aucune vulnérabilité connue. Vérifications navigateur : création de projet, démarrage/pause, diagnostic CLI avec pont désactivé, focus du menu mobile et Échap, dimensions 320/768/1024/1440 sans débordement horizontal ; aucune erreur de console observée sur le parcours contrôlé.
 
 L’envoi du code par le workflow Sites a été refusé par la vérification automatique des autorisations, faute d’accord utilisateur explicite pour le dépôt hébergé privé. Aucun push ni déploiement n’a eu lieu. Le code local, son archive et le build sont livrés ; la publication attend cet accord. La fiche Site déjà créée et son identifiant doivent être réutilisés si l’utilisateur autorise la suite.
+
+
+## Refonte UX demandée par l’utilisateur
+
+Interface recentrée sur une seule demande en langage naturel. Préparation automatique, trois étapes visibles, dossier et bibliothèque. Suppression des menus de gestion d’agents, du dashboard et du formulaire technique. Conservation des données v1 et du backend. Design sombre à surfaces de verre ; clavier, focus et responsive vérifiés. Revue indépendante dans REVIEW-UX.md, 52 tests réussis et build validé dans QA-UX.md. Code livré localement et archive mise à jour ; aucune publication externe tentée pour cette refonte.

@@ -1,6 +1,6 @@
 # AI Software Factory
 
-Un atelier React, TypeScript et Tailwind pour cadrer des projets, visualiser six rôles IA, suivre leurs tâches et conserver les livrables. Interface française, responsive, accessible au clavier et sauvegarde navigateur.
+Une interface React, TypeScript et Tailwind centrée sur une seule action : décrire son idée d’application. Design sombre inspiré du verre, navigation minimale, préparation automatique en trois étapes et dossier consultable. Interface française, responsive et accessible au clavier. Les six rôles restent internes au moteur.
 
 ## Démarrage local
 
@@ -15,7 +15,7 @@ Ouvrir `http://127.0.0.1:5173`. La commande démarre Vite et l’API Node locale
 
 ## Deux modes explicites
 
-**Simulation locale, mode par défaut.** Créez un projet, lancez son cycle de six étapes, mettez en pause, reprenez, consultez et exportez les documents. Le moteur déterministe n’appelle aucun modèle. Les exemples sont étiquetés. Les documents sont des modèles de préparation, pas du code développé, des tests passés ou une revue réelle. Les projets sont sauvegardés dans le navigateur ; un rechargement met les simulations en pause. L’export JSON est une sauvegarde consultable ; l’import n’est pas implémenté.
+**Simulation locale, mode par défaut.** Décrivez votre idée puis choisissez « Créer mon app ». La préparation démarre automatiquement. Trois étapes regroupent les six rôles internes. Retrouvez ensuite le dossier, consultez ses documents et téléchargez-les. « Mes projets » conserve vos idées ; les réglages contiennent les détails avancés. Le moteur déterministe n’appelle aucun modèle. Les exemples sont étiquetés. Les documents sont des modèles de préparation, pas du code développé, des tests passés ou une revue réelle. Les projets sont sauvegardés dans le navigateur ; un rechargement met les simulations en pause. L’export JSON est une sauvegarde consultable ; l’import n’est pas implémenté.
 
 **Missions Codex réelles, option locale.** Le backend peut lancer une analyse réelle avec le CLI, affectée à l’un des six rôles. Il ne lance pas un cycle de génération d’application et ne pilote pas les sous-agents internes de ce chat. Aucun résultat réel n’est remplacé par une simulation en cas d’échec.
 
@@ -42,7 +42,7 @@ npm run build
 npm run preview
 ```
 
-`npm test` exécute les tests Vitest et Node. Les tests du pont utilisent un adaptateur injecté, sans appel IA et sans coûts de modèle. Les détails et limites réellement observés figurent dans [docs/QA.md](docs/QA.md) et [docs/REVIEW.md](docs/REVIEW.md). Le build statique est produit dans `dist/`.
+`npm test` exécute les tests Vitest et Node. Les tests du pont utilisent un adaptateur injecté, sans appel IA et sans coûts de modèle. Les détails et limites réellement observés figurent dans [docs/QA-UX.md](docs/QA-UX.md) et [docs/REVIEW-UX.md](docs/REVIEW-UX.md). Le build statique est produit dans `dist/`.
 
 ## Équipe Codex réelle
 
@@ -56,7 +56,7 @@ Les six rôles ont reçu des missions par les outils natifs de délégation pend
 src/domain.ts                 Règles et moteur de simulation
 src/storage.ts                Validation et sauvegarde versionnée
 src/App.tsx                   Navigation et orchestration de l’interface
-src/components/               Dashboard, formulaire, projet, connexions
+src/components/               Demande, dossier, bibliothèque et réglages
 src/useRealJobs.ts            Suivi réel indépendant de la page affichée
 server/app.mjs                API HTTP, contrôles Host/Origin et validation
 server/bridge.mjs             Adaptateur CLI et cycle de vie des missions

@@ -1,57 +1,89 @@
-# AI Software Factory — cadrage produit du MVP
+# AI Software Factory — première version réelle
 
-## Finalité
+Date de cadrage : 4 novembre 2026. Ce document remplace le cadrage initial à dashboard. Il définit une cible, pas des capacités déjà livrées. Les preuves historiques restent dans `QA.md`, `QA-UX.md`, `REVIEW.md`, `REVIEW-UX.md` et `EXECUTION.md`, dans leurs périmètres respectifs.
 
-Permettre de décrire une application, de répartir son travail entre six rôles spécialisés et de suivre les tâches et livrables. Le MVP offre un parcours immédiatement utilisable en simulation locale. Une orchestration Codex réelle n'est présentée comme telle que lorsqu'un connecteur disponible a réellement exécuté le travail et produit des preuves.
+## Problème et résultat attendu
+Un porteur de projet décrit une idée sans devoir piloter six métiers ni assembler leurs réponses. L'usine coordonne PM, UX Designer, Software Architect, Fullstack Developer, QA Engineer et Code Reviewer pour produire une application utilisable, avec code et preuves de vérification.
 
-## Utilisateurs et besoins
+Première cible : **une application web React, TypeScript et Tailwind, exécutée localement, avec persistance dans le navigateur, tests, aperçu et export des sources**. Un gestionnaire de dépenses personnel sans connexion bancaire sert de scénario de référence. Un dossier de préparation seul ne satisfait pas cette cible.
 
-| Persona | Besoin principal | Résultat attendu |
-| --- | --- | --- |
-| Porteur de projet | Transformer une idée en travail structuré | Brief enregistré, étapes et responsabilités lisibles |
-| Développeur indépendant | Explorer un processus de livraison assisté | Tâches, consignes et livrables réutilisables |
-| Responsable technique | Comprendre ce qui a réellement été exécuté | Mode explicite, résultats consultables et limites connues |
+## État actuel observé
+| Capacité | État au cadrage |
+| --- | --- |
+| Demande unique, bibliothèque, dossier et réglages avancés | Implémentés |
+| Six rôles, progression et documents | Simulation déterministe, explicitement étiquetée |
+| Sauvegarde des projets simulés | Stockage navigateur ; simulation mise en pause au rechargement |
+| Mission CLI réelle | Pont facultatif d'analyse en lecture seule, une mission à la fois, historique serveur en mémoire |
+| Génération de sources, orchestration réelle, tests de l'application produite | À implémenter |
+| Isolation par application, aperçu isolé et export des sources générées | À implémenter |
 
-## Périmètre
+`UX.md` et `ARCHITECTURE.md` décrivent le parcours et le backend actuels. `ROADMAP.md` précise leur évolution. Aucun changement de capacité n'est activé par ce cadrage.
 
-Application web React, TypeScript et Tailwind CSS : dashboard, création d'un projet, équipe de six rôles, suivi des tâches, historique et consultation des résultats. Les données de démonstration et les nouvelles données sont distinguées. La persistance locale permet de retrouver les projets après rechargement. Le backend local expose les capacités effectivement détectées ; le pont CLI Codex reste optionnel et doit rendre visibles ses prérequis.
+## Utilisateurs et parcours
+Utilisateur principal : porteur de projet individuel sur sa machine. Il veut obtenir une petite application locale et comprendre ce qui a été fait. Un développeur doit pouvoir récupérer les sources et reproduire les contrôles.
 
-Le MVP n'inclut pas la collaboration multiutilisateur, la facturation, la gestion de secrets dans le navigateur ou un déploiement automatique d'applications produites. Une progression de simulation décrit un scénario déterministe : elle ne prouve ni génération par un modèle, ni tests exécutés, ni validation humaine.
+1. Décrire l'idée dans le champ existant ; identifier le mode simulation ou réel avant lancement. Le mode réel expose prérequis et consommation possible.
+2. Obtenir le périmètre et les critères du PM. Seules les ambiguïtés déterminantes demandent une clarification ; les hypothèses ordinaires sont consignées.
+3. Suivre UX, architecture, développement, QA et revue, avec transmission des livrables utiles. Les six rôles restent internes au parcours principal.
+4. Consulter l'avancement et les erreurs, demander une pause, reprendre ou annuler sans piloter chaque rôle ni approuver chaque passage déjà autorisé.
+5. Laisser l'usine corriger les défauts dans ses plafonds, puis refaire les contrôles concernés et la revue des corrections.
+6. Accéder à l'aperçu, aux sources et aux preuves d'une version validée. Une exécution interrompue conserve diagnostic et livrables partiels sans statut de livraison complète.
 
-## Parcours et responsabilités
+## Périmètre retenu
+- Usine locale, mono-utilisateur, sans compte applicatif ni hébergement cloud requis pour l'usine ou les applications. Le runtime IA réel peut appeler un service distant et nécessite ses propres accès et quotas.
+- Applications clientes React/TypeScript/Tailwind ; l'architecte choisit structure et contrats dans ce cadre, sans sélection libre de stack.
+- Données clientes dans le navigateur, validation au chargement et traitement des erreurs de stockage.
+- Une génération active à la fois ; six missions de rôles distinctes exécutées successivement par un runtime réel, avec traces de leurs transmissions. Un rôle nommé ne prouve pas un sous-agent natif supplémentaire.
+- Espace isolé par projet : sources, documents, tests et preuves séparés de ceux de l'usine et des autres projets.
+- Historique réel persistant côté serveur, réconciliation après redémarrage, reprises identifiables et plafonds explicites.
+- Aperçu local isolé, export des sources et reproduction depuis une extraction neuve sous les prérequis documentés.
+- Préservation de la simulation et des anciens projets ; aucune conversion en exécution réelle par changement d'étiquette.
 
-| Étape et rôle | Responsabilités | Livrable identifiable | Passage à l'étape suivante |
+## Hors périmètre
+Collaboration multi-utilisateur, synchronisation cloud, backend métier des applications générées, authentification cliente, paiements, données bancaires, intégrations API/MCP externes, applications mobiles natives, publication automatique, import arbitraire de dépôts et générations simultanées.
+
+Une demande hors périmètre reçoit une explication et une proposition réduite. La publication pourra faire l'objet d'une évolution avec ses autorisations propres.
+
+## Pipeline et livrables
+Les chemins ci-dessous sont relatifs à l'application produite et ne désignent pas les documents de l'usine.
+
+| Étape | Entrées | Sorties | Condition de passage |
 | --- | --- | --- | --- |
-| 1. Product Manager | Clarifier le problème, le périmètre et les critères d'acceptation | Brief et backlog priorisé | Critères suffisamment précis pour concevoir |
-| 2. UX Designer | Définir les parcours, états et règles d'accessibilité | Parcours, structure des écrans et spécification UI | Parcours couvrant les besoins prioritaires |
-| 3. Software Architect | Définir modules, données, contrats et limites d'intégration | Document d'architecture et décisions techniques | Contrats utilisables par le développement |
-| 4. Fullstack Developer | Implémenter les fonctionnalités et gérer les erreurs | Code frontend/backend et instructions de lancement | Version exécutable et vérifiable |
-| 5. QA Engineer | Vérifier les critères, les transitions et la persistance | Tests et rapport avec commandes et résultats observés | Échecs corrigés ou explicitement documentés |
-| 6. Code Reviewer | Examiner correction, sécurité, lisibilité et régressions | Revue priorisée avec références et corrections | Problèmes bloquants corrigés ou livraison limitée explicitement |
+| PM | Brief et réponses utiles | `docs/PRODUCT.md`, hypothèses et critères numérotés | Périmètre compatible et critères testables |
+| UX | Brief et PM | `docs/UX.md`, parcours, écrans et états | Besoins prioritaires et accessibilité couverts |
+| Architecture | PM et UX | `docs/ARCHITECTURE.md`, données, contrats, commandes | Instructions réalisables dans le cadre autorisé |
+| Développement | Livrables amont validés | Sources, tests pertinents, scripts et `README.md` | Version identifiable disponible pour vérification |
+| QA | Critères et version du code | Tests, journaux et `docs/QA.md` | Résultat et preuve ou limite explicite pour chaque critère |
+| Revue | Même version, diff et résultats QA | `docs/REVIEW.md`, constats priorisés | Défauts bloquants renvoyés en correction |
+| Correction et livraison | Constats et échecs | Version corrigée, preuves, aperçu et export | Aucun défaut bloquant ouvert ; contrôles et revue à jour |
 
-L'orchestrateur coordonne les dépendances et consolide les résultats. Des délégations parallèles sont possibles pour les tâches indépendantes ; les six rôles ne supposent pas six agents simultanés. Dans l'interface, un rôle est une définition de responsabilité, pas la preuve d'un processus autonome actif.
+Les contrats détaillés seront définis à l'étape 2. Le coordinateur gère les transitions ; aucun rôle ne s'attribue toutes les validations. Une modification des entrées entraîne la revalidation des étapes dépendantes.
 
-## Critères d'acceptation
+## Critères d'acceptation de la cible
+Ces critères doivent être démontrés avant de déclarer la première version réelle livrée. Leur rédaction ne vaut pas réussite.
 
-1. **Création valide.** Depuis le formulaire, un nom et un brief valides créent un projet identifiable ; les champs requis vides empêchent la soumission et affichent une erreur compréhensible.
-2. **Persistance.** Après création d'un projet et rechargement de la page, le projet et son état enregistré sont retrouvés ; une donnée locale illisible produit un état de repli utilisable.
-3. **Dashboard cohérent.** Les compteurs et listes reflètent les projets et leurs états ; une absence de projet propose une action de création.
-4. **Six rôles explicites.** La vue équipe contient exactement les six rôles demandés et permet d'identifier leurs responsabilités et leurs livrables.
-5. **Simulation honnête.** Toute exécution locale simulée porte une indication visible « Simulation » ; ses résultats ne déclarent pas qu'un modèle, un test ou un commit réel a été exécuté.
-6. **Suivi traçable.** Une simulation fait évoluer les tâches selon leurs dépendances, affiche leur état et conserve des résultats consultables dans l'historique associé au projet.
-7. **Capacités réelles vérifiables.** La disponibilité d'un backend ou du CLI est établie par une réponse réelle ; si le pont est absent, l'interface explique le prérequis et ne présente aucun agent comme connecté. Une exécution réelle échouée reste un échec visible.
-8. **Interface utilisable.** Les principales actions sont accessibles au clavier, les formulaires disposent de labels et les vues restent utilisables sur petit et grand écran ; chargement, erreur et liste vide ont un retour explicite.
+1. **Demande simple.** Un brief valide crée un projet identifiable sans gestion manuelle des agents ; une demande invalide affiche une erreur et ne lance aucun job.
+2. **Mode et prérequis.** Avant exécution réelle, mode, prérequis, consommation possible et plafonds configurés sont visibles. Sans capacité disponible, aucun job n'est annoncé comme lancé et aucune simulation ne le remplace silencieusement.
+3. **Cadrage.** Le PM consigne périmètre, exclusions, hypothèses et critères numérotés. Une demande hors périmètre ou une ambiguïté déterminante bloque les étapes dépendantes avec une explication exploitable.
+4. **Six missions traçables.** Chaque rôle reçoit ses entrées de référence et produit un livrable identifiable. Le journal conserve missions réellement lancées, tentatives, résultats et transmissions ; une dépendance non validée empêche le lancement suivant.
+5. **Écritures isolées.** Chaque application possède son espace ; les tests démontrent que chemins hors espace, traversées et liens sortants ne permettent pas d'écrire dans l'usine ou un autre projet. Outils et commandes sont limités côté serveur.
+6. **Code exploitable.** Les sources existent avec manifeste, verrou de dépendances, scripts de développement, vérification et build, et README de lancement ; un texte décrivant du code ne suffit pas.
+7. **Persistance cliente.** Les dépenses du scénario de référence sont retrouvées au rechargement. Données invalides et refus de stockage ont un comportement explicite sans fausse confirmation de sauvegarde.
+8. **Exécution durable.** Après redémarrage serveur, projets, tentatives, événements et livrables restent consultables. Une mission interrompue est réconciliée ou d'issue inconnue, sans faux succès ni relance facturable implicite.
+9. **Pause, reprise et annulation.** Une pause empêche les nouveaux départs et devient effective au point de reprise enregistré de la mission active. Une reprise conserve l'historique ; une annulation exige un arrêt confirmé avant réutilisation des ressources.
+10. **Échecs et plafonds.** Timeout, sortie invalide, commande échouée ou plafond atteint bloquent les dépendances et conservent le diagnostic. Les corrections sont bornées ; dépasser les plafonds exige une nouvelle décision explicite de l'utilisateur. Si les coûts ne sont pas mesurables, aucun plafond financier garanti n'est annoncé.
+11. **Vérifications de l'application.** TypeScript, tests métier, build et parcours navigateur prioritaires sont exécutés sur une version identifiée de l'application générée. Le rapport relie critères, résultats, commandes et dates ; les tests de l'usine ne les remplacent pas.
+12. **Revue indépendante.** Un intervenant distinct de l'auteur examine la version livrée, priorise les constats et vérifie les corrections. Aucun défaut bloquant ni contrôle requis non vérifié ne subsiste pour une livraison complète.
+13. **Aperçu isolé.** L'application s'ouvre localement sur une origine distincte avec un cycle de vie contrôlé, sans accès au DOM de l'usine, à son API privilégiée ou aux secrets serveur. Les tests couvrent les appels depuis l'aperçu ; aucun HTML généré n'est injecté dans la page de l'usine.
+14. **Export reproductible.** Une archive contient sources, verrou, documents et preuves utiles, sans secret ni dépendances installées. Depuis une extraction neuve, les commandes documentées d'installation, vérification et build réussissent ; les prérequis réseau sont indiqués.
+15. **Accessibilité et régression.** Demande, suivi et résultats restent utilisables au clavier et sur mobile, avec labels, focus, retours d'erreur et reduced-motion. Les projets simulés existants restent lisibles et explicitement simulés.
 
-## Priorités de livraison
+## Scénario de référence
+Brief : « Une application personnelle pour saisir mes dépenses en euros, les classer et voir le total du mois, avec conservation sur cet appareil. »
 
-- **P0 :** parcours création → simulation → suivi → résultats, séparation simulation/réel, six rôles et persistance.
-- **P1 :** dashboard, recherche et filtres, capacités du backend, export des livrables, tests automatisés et revue indépendante.
-- **P2 :** orchestration réelle plus étendue, streaming, isolation des exécutions, stockage partagé et authentification, après validation des contrats et prérequis.
+Le cadrage fixe au minimum date, libellé, montant strictement positif à deux décimales et catégorie. Le total mensuel utilise une représentation monétaire évitant les erreurs de calcul usuelles. La recette vérifie création, saisie invalide, modification, suppression, filtre mensuel, recalcul et rechargement. Un jeu vide, une donnée persistée corrompue et un refus de stockage sont exercés. Ces vérifications restent à implémenter et exécuter aux étapes 5 et 6.
 
-## Identifiants, coûts et autorisations
+## Définition de livré et décisions restantes
+La première version est livrée quand les 15 critères sont vérifiés sur une version identifiée, que le scénario a été exercé avec le runtime réel et que preuves, aperçu et export correspondent à cette version. Un contrôle absent reste « non vérifié » ; une livraison partielle ne clôture pas la cible.
 
-La simulation locale ne nécessite pas de clé d'API et n'effectue aucun appel de modèle. La détection d'un binaire ne prouve pas que son compte est authentifié ou qu'une exécution est autorisée. Une connexion réelle peut nécessiter une session Codex ou des identifiants, consommer un quota ou générer un coût selon le service utilisé. Ces conditions doivent apparaître avant l'action correspondante. Les secrets restent côté serveur ; publication, accès à des dépôts externes et opérations irréversibles respectent les autorisations effectives.
-
-## Mesure de réussite
-
-Un utilisateur peut créer un projet et retrouver ses résultats sans aide, comprendre le rôle de chaque membre de l'équipe et identifier immédiatement si le travail affiché est simulé ou réellement exécuté. La livraison est accompagnée des résultats de tests observés et d'une revue du code ; aucune métrique de qualité n'est inventée à partir d'une animation.
+Décisions techniques restantes : adaptateur réel, formats des contrats, stockage serveur, états détaillés, racine des espaces, isolation des commandes et de l'aperçu, limites de durée/tentatives et mesure de consommation. Le moteur doit pouvoir être testé avec un adaptateur injecté sans coût modèle. Une recette réelle sera distincte, après activation autorisée et information sur la consommation ; aucun appel réel n'est autorisé par cette étape documentaire.
